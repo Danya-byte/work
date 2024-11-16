@@ -24,7 +24,9 @@ const headerClass = computed(() => {
 <template>
     <div :class="`view-info ${headerClass}`">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg">
+            <div>
+                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg">
+            </div>
         </div>
         <div v-bind="connect()">
             <div id="ton-connect"></div>
@@ -49,7 +51,7 @@ const headerClass = computed(() => {
 
 .r {
     background: #ffffff;
-    box-shadow: #ffffff 0px;
+    box-shadow: inset 0 0 20px 0px #f0f0f0;
 }
 </style>
 

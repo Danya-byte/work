@@ -1,52 +1,79 @@
 <template>
-    <div class="leader-board open">
+    <div class="task-board open">
       <div style="display: grid; align-items: center; justify-content: center;">
-        <img
-          width="65px"
-          height="65px"
-          src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp"
-        >
+        <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
       </div>
       <div class="leader-title">
         <h1 style="color: #353535; text-align: center;">Tasks</h1>
       </div>
-      <ul class="refs">
-        <li v-for="(item) in data" :key="item.id">
-          <div class="about">
-            <div style="display: flex; align-items: center; justify-content: center;">
-              <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
-              <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+      <section class="tasks">
+        <div class="option">
+            <div class="eci">
+                <div>
+                    <img width="60px" height="60px" src="../../assets/ECI.png" />
+                    <h3>ECI</h3>
+                </div>
+                <div>
+                    <p>Earn ECI for <br> complete the tasks</p>
+                </div>
             </div>
-            <div>
-              <h3 style="font-family: Quicksand">{{ item.type }}</h3>
-              <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+            <div class="ewi">
+                <div>
+                    <img width="60px" height="60px" src="../../assets/EWI.png" />
+                    <h3>EWI</h3>
+                </div>
+                <div>
+                    <p>Earn EWI for <br> complete the tasks</p>
+                </div>
             </div>
-          </div>
-          <div style="display: grid; align-items: center;">
-            <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
-          </div>
-        </li>
-      </ul>
+            <div class="ewe">
+                <div>
+                    <img width="60px" height="60px" src="../../assets/EWE.png" />
+                    <h3>EWE</h3>
+                </div>
+                <div>
+                    <p>Earn EWE for <br> complete the tasks</p>
+                </div>
+            </div>
+        </div>
+        <ul class="refs">
+            <li v-for="(item) in data" :key="item.id">
+            <div class="about">
+                <div style="display: flex; align-items: center; justify-content: center;">
+                <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                </div>
+                <div>
+                <h3 style="font-family: Quicksand">{{ item.type }}</h3>
+                <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+                </div>
+            </div>
+            <div style="display: grid; align-items: center;">
+                <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
+            </div>
+            </li>
+        </ul>
+    </section>
     </div>
 </template>
 
 <style scoped>
-.leader-board {
+.task-board {
 display: none;
 position: absolute;
 width: 100vw;
 height: calc(100vh - 80px);
 z-index: 1000;
-background: #ffffff;
+background: #f0f0f0;
 }
 
-.leader-board.open {
+.task-board.open {
 display: block;
 animation: open 0.5s ease forwards;
 bottom: -200px;
 }
 
-.leader-board.close {
+.task-board.close {
     animation: close 0.5s ease forwards;
     bottom: -200px;
 }
@@ -74,21 +101,112 @@ bottom: -200px;
 
 .refs {
     margin-top: 15px;
+    display: grid;
+    gap: 20px;
 }
 
 .refs li {
-    margin: 10px;
-    padding: 10px;
+    padding: 0 5px 20px 5px;
     display: flex;
     justify-content: space-between;
-    border: 2px solid #f0f0f0;
-    border-radius: 15px;
+    border-bottom: 1px solid #fff;
 }
 
 .about {
     display: flex;
     gap: 10px;
     align-items: center;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: auto;
+    gap: 10px;
+}
+
+.tasks {
+    padding: 10px;
+    background: #f0f0f0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    margin-top: 10px;
+}
+
+.ewe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: linear-gradient(45deg, #fee4b4, #622020);
+    border-radius: 10px;
+    gap: 10px;
+    border: 2px solid #fff;
+    min-width: 250px;
+}
+
+.ewe h3 {
+    text-align: center;
+    font-family: 'Quicksand';
+    color: #faebd7;
+}
+
+.ewe p {
+    text-align: center;
+    color: #fff8dc;
+    font-family: 'Quicksand';
+    font-weight: 600;
+}
+
+.ewi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: linear-gradient(45deg, #39596f, #c1f8fe);
+    border-radius: 10px;
+    gap: 10px;
+    border: 2px solid #fff;
+    min-width: 250px;
+}
+
+.ewi h3 {
+    text-align: center;
+    font-family: 'Quicksand';
+    color: #ffffff;
+}
+
+.ewi p {
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Quicksand';
+    font-weight: 600;
+}
+
+.eci {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: linear-gradient(45deg, #f4c6af, #96836d);
+    border-radius: 10px;
+    gap: 10px;
+    border: 2px solid #fff;
+    min-width: 250px;
+}
+
+.eci h3 {
+    text-align: center;
+    font-family: 'Quicksand';
+    color: #ffffff;
+}
+
+.eci p {
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Quicksand';
+    font-weight: 600;
 }
 </style>
 
