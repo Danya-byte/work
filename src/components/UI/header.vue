@@ -50,8 +50,8 @@ const headerClass = computed(() => {
 }
 
 .r {
-    background: #ffffff;
-    box-shadow: inset 0 0 20px 0px #f0f0f0;
+    background: #181818;
+    box-shadow: inset 0 0 20px 0px #000;
 }
 </style>
 

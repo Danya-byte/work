@@ -4,7 +4,7 @@
         <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
       </div>
       <div class="leader-title">
-        <h1 style="color: #353535; text-align: center;">Tasks</h1>
+        <h1 style="color: #f0f0f0; text-align: center;">Tasks</h1>
       </div>
       <section class="tasks">
         <div class="option">
@@ -38,19 +38,19 @@
         </div>
         <ul class="refs">
             <li v-for="(item) in data" :key="item.id">
-            <div class="about">
-                <div style="display: flex; align-items: center; justify-content: center;">
-                <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
-                <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                <div class="about">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                        <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                    </div>
+                    <div>
+                        <h3 style="font-family: Quicksand; color: #fff;">{{ item.type }}</h3>
+                        <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+                    </div>
                 </div>
-                <div>
-                <h3 style="font-family: Quicksand">{{ item.type }}</h3>
-                <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+                <div style="display: grid; align-items: center;">
+                    <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
                 </div>
-            </div>
-            <div style="display: grid; align-items: center;">
-                <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
-            </div>
             </li>
         </ul>
     </section>
@@ -59,18 +59,18 @@
 
 <style scoped>
 .task-board {
-display: none;
-position: absolute;
-width: 100vw;
-height: calc(100vh - 80px);
-z-index: 1000;
-background: #f0f0f0;
+    display: none;
+    position: absolute;
+    width: 100vw;
+    height: calc(100vh - 80px);
+    z-index: 1000;
+    background: #212121;
 }
 
 .task-board.open {
-display: block;
-animation: open 0.5s ease forwards;
-bottom: -200px;
+    display: block;
+    animation: open 0.5s ease forwards;
+    bottom: -200px;
 }
 
 .task-board.close {
@@ -109,7 +109,7 @@ bottom: -200px;
     padding: 0 5px 20px 5px;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #181818;
 }
 
 .about {
@@ -128,9 +128,6 @@ bottom: -200px;
 
 .tasks {
     padding: 10px;
-    background: #f0f0f0;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
     margin-top: 10px;
 }
 
@@ -142,7 +139,6 @@ bottom: -200px;
     background: linear-gradient(45deg, #fee4b4, #622020);
     border-radius: 10px;
     gap: 10px;
-    border: 2px solid #fff;
     min-width: 250px;
 }
 
@@ -167,7 +163,6 @@ bottom: -200px;
     background: linear-gradient(45deg, #39596f, #c1f8fe);
     border-radius: 10px;
     gap: 10px;
-    border: 2px solid #fff;
     min-width: 250px;
 }
 
@@ -192,7 +187,6 @@ bottom: -200px;
     background: linear-gradient(45deg, #f4c6af, #96836d);
     border-radius: 10px;
     gap: 10px;
-    border: 2px solid #fff;
     min-width: 250px;
 }
 
