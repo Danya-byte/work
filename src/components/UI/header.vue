@@ -11,7 +11,7 @@ const props = defineProps({
 const fetchClass = () => {
     if(props.data == 0) {
         return 'm'
-    } else if (props.data == 1) {
+    } else {
         return 'r'
     }
 }

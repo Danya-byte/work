@@ -3,13 +3,15 @@ import Background from '@/components/UI/bg.vue'
 import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Ref from './ref.vue'
+import Task from './task.vue'
 
 export default {
   components: {
     Background,
     Headers,
     Footers,
-    Ref
+    Ref,
+    Task
   },
   data() {
     return {
@@ -19,11 +21,16 @@ export default {
   mounted() {
     window.Telegram.WebApp.BackButton.onClick(() => {
       this.show = 0
+      window.Telegram.WebApp.BackButton.hide()
     })
   },
   methods: {
     openRef() {
       this.show = 1
+      window.Telegram.WebApp.BackButton.show()
+    },
+    openTask() {
+      this.show = 2
       window.Telegram.WebApp.BackButton.show()
     }
   }
@@ -50,8 +57,9 @@ export default {
       </div>
     </nav>
   </main>
-  <Footers @refOpen="openRef" />
+  <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
+  <Task v-if="show === 2" />
 </template>
 
 <style scoped>
