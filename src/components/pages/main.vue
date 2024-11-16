@@ -17,18 +17,14 @@ export default {
     }
   },
   mounted() {
-    if(this.show == 0) {
-      window.Telegram.WebApp.BackButton.hide()
-    } else {
-      window.Telegram.WebApp.BackButton.show()
-      window.Telegram.WebApp.BackButton.onClick(() => {
-        this.show = 0
-      })
-    }
+    window.Telegram.WebApp.BackButton.onClick(() => {
+      this.show = 0
+    })
   },
   methods: {
     openRef() {
       this.show = 1
+      window.Telegram.WebApp.BackButton.show()
     }
   }
 }
