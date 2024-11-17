@@ -22,7 +22,7 @@ section::before {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: linear-gradient(#000,#0f0,#000);
+  background: linear-gradient(#000,#00ffff,#000);
   animation: animate 5s linear infinite;
 }
 
