@@ -1,3 +1,21 @@
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+const tg = window.Telegram.WebApp
+
+tg.MainButton.show()
+tg.MainButton.text = "Subscribe"
+
+tg.onEvent('mainButtonClicked', () => {
+    count.value ++
+    if (count.value == 1) {
+        tg.MainButton.text = "Join"
+    }
+})
+
+</script>
+
 <template>
     <div class="join-board open">
         <div style="display: grid; align-items: center; justify-content: center;">
@@ -5,7 +23,8 @@
                 <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" />
             </div>
             <div class="leader-title">
-                <h1 style="color: #f0f0f0; text-align: center;">Subscribe <br> to channel</h1>
+                <h1 v-if="count == 0" style="color: #f0f0f0; text-align: center;">Subscribe <br> to channel</h1>
+                <h1 v-if="count == 1" style="color: #f0f0f0; text-align: center;">Join <br> to community</h1>
             </div>
         </div>
     </div>
@@ -74,21 +93,3 @@ border-radius: 15px;
     align-items: center;
 }
 </style>
-
-<script>
-import { ref } from 'vue'
-
-const count = ref(0)
-const tg = window.Telegram.WebApp
-
-tg.MainButton.show()
-tg.MainButton.text = "Subscribe"
-
-tg.onEvent('mainButtonClicked', () => {
-    count.value ++
-    if (count.value == 2) {
-        tg.MainButton.text = "Join"
-    }
-})
-
-</script>
