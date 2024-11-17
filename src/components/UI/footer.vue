@@ -63,12 +63,12 @@ footer {
     padding: 10px;
     width: 80vw;
     border: 0;
-    background: #6bfe07;
+    background: #66cdaa;
     border-radius: 10px;
     font-size: 17px;
     font-family: Inter;
     font-weight: 600;
-    border-bottom: 5px solid #088139;
+    border-bottom: 5px solid #539881;
     color: #0e0e0e;
 }
 </style>
