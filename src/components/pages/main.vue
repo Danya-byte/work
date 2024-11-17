@@ -19,6 +19,7 @@ export default {
     }
   },
   mounted() {
+    window.Telegram.WebApp.MainButton.hide()
     window.Telegram.WebApp.BackButton.onClick(() => {
       this.show = 0
       window.Telegram.WebApp.BackButton.hide()

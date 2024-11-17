@@ -26,7 +26,7 @@ tg.onEvent('mainButtonClicked', () => {
     <div class="join-board open">
         <div style="display: grid; align-items: center; justify-content: center;">
             <div style="display: grid; align-items: center; justify-content: center;">
-                <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" />
+                <img width="80px" height="80px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" />
             </div>
             <div class="leader-title">
                 <h1 v-if="count == 0" style="color: #f0f0f0; text-align: center;">Subscribe <br> to channel</h1>
