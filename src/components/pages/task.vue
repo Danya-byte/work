@@ -1,18 +1,18 @@
 <template>
     <div class="task-board open">
-      <div style="display: grid; align-items: center; justify-content: center;">
-        <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
-      </div>
-      <div class="leader-title">
-        <h1 style="color: #f0f0f0; text-align: center;">Tasks</h1>
-      </div>
-      <section class="tasks">
-        <div class="option">
-            <div class="eci">
-                <div>
-                    <img width="60px" height="60px" src="../../assets/ECI.png" />
-                    <h3>ECI</h3>
-                </div>
+        <div style="display: grid; align-items: center; justify-content: center;">
+            <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
+        </div>
+        <div class="leader-title">
+            <h1 style="color: #f0f0f0; text-align: center;">Tasks</h1>
+        </div>
+        <section class="tasks">
+            <div class="option">
+                <div class="eci">
+                    <div>
+                        <img width="60px" height="60px" src="../../assets/ECI.png" />
+                        <h3>ECI</h3>
+                    </div>
                 <div>
                     <p>Earn ECI for <br> complete the tasks</p>
                 </div>
@@ -53,7 +53,7 @@
                 </div>
             </li>
         </ul>
-    </section>
+        </section>
     </div>
 </template>
 
@@ -129,6 +129,8 @@
 .tasks {
     padding: 10px;
     margin-top: 10px;
+    display: grid;
+    gap: 20px;
 }
 
 .ewe {

@@ -9,7 +9,9 @@ defineEmits(['refOpen', 'taskOpen'])
 <template>
     <footer>
         <div class="another">
-            <button>Join earlyer</button>
+            <RouterLink to="/join">
+                <button>Join earlyer</button>
+            </RouterLink>
         </div>
         <nav class="bar">
             <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('taskOpen')">
