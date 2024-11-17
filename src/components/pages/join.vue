@@ -11,6 +11,12 @@ tg.onEvent('mainButtonClicked', () => {
     count.value ++
     if (count.value == 1) {
         tg.MainButton.text = "Join"
+        tg.openTelegramLink('https://t.me/Greenwoods_Community')
+    } else if (count.value == 2) {
+        tg.MainButton.text = "Start"
+        tg.openTelegramLink('https://t.me/GreenWoodsGlobal')
+    } else {
+        window.location.href = '/'
     }
 })
 
