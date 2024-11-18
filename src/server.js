@@ -21,7 +21,7 @@ function formatNumberWithSpaces(num) {
 }
 
 // Получение общего количества участников
-app.get('/api/total-members', async (req, res) => {
+app.get('/api/TotalMembers', async (req, res) => {
   const client = await pool.connect();
   try {
     const result = await client.query('SELECT COUNT(*) FROM participants');
