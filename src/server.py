@@ -78,8 +78,9 @@ def total_members():
     if pool is None:
         return jsonify({'error': 'Database pool is not initialized'}), 500
 
-    # Запускаем асинхронную задачу в основном цикле событий
-    total = run_async_task(get_total_members())
+    # Запускаем асинхронную задачу в отдельном потоке
+    future = executor.submit(run_async_task, get_total_members())
+    total = future.result()
 
     return jsonify({'totalMembers': total})
 
