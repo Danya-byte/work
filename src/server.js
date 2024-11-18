@@ -48,14 +48,21 @@ async function initializeDatabase() {
   }
 }
 
+// Форматирование числа
+function formatNumber(num) {
+  const numStr = num.toString().padStart(4, '0'); // Заполняем нулями до 4 символов
+  return numStr.split(''); // Разделяем строку на отдельные цифры
+}
+
 // Получение общего количества участников
 app.get('/api/total-members', async (req, res) => {
   const client = await pool.connect();
   try {
     const result = await client.query('SELECT COUNT(*) FROM participants');
     const totalMembers = parseInt(result.rows[0].count, 10);
-    console.log(`Total members: ${totalMembers}`);
-    res.json({ totalMembers });
+    const formattedMembers = formatNumber(totalMembers);
+    console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers.join(' ')}`);
+    res.json({ totalMembers: formattedMembers });
   } catch (error) {
     console.error('Error fetching total members:', error);
     res.status(500).json({ error: 'Internal Server Error' });

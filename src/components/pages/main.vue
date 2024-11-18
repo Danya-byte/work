@@ -17,8 +17,7 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: 0, // Добавляем переменную для хранения общего количества участников
-      digits: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
+      totalMembers: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
     }
   },
   async mounted() {
@@ -44,16 +43,11 @@ export default {
       // Замените URL на ваш реальный URL для получения данных
       try {
         const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
-        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
-        this.updateDigits(this.totalMembers);
-        console.log('Total Members Digits:', this.digits.join(' ')); // Отладочный вывод
+        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит массив цифр
+        console.log('Total Members Digits:', this.totalMembers.join(' ')); // Отладочный вывод
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
       }
-    },
-    updateDigits(num) {
-      const numStr = num.toString().padStart(4, '0'); // Заполняем нулями до 4 символов
-      this.digits = numStr.split('0');
     }
   }
 }
@@ -68,7 +62,7 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div v-for="(digit, index) in digits" :key="index" class="digit">
+        <div v-for="(digit, index) in totalMembers" :key="index" class="digit">
           <p>{{ digit }}</p>
         </div>
       </div>
