@@ -18,7 +18,8 @@ export default {
     return {
       show: 0,
       totalMembers: 0, // Добавляем переменную для хранения общего количества участников
-      defaultDigits: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
+      firstDigit: '0', // Первая цифра числа
+      otherDigits: ['0', '0', '0'], // Остальные цифры числа
     }
   },
   async mounted() {
@@ -45,10 +46,16 @@ export default {
       try {
         const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
+        this.updateDigits(this.totalMembers);
         console.log('Total Members:', this.totalMembers); // Отладочный вывод
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
       }
+    },
+    updateDigits(num) {
+      const numStr = num.toString().padStart(4, '0'); // Заполняем нулями до 4 символов
+      this.firstDigit = numStr[0];
+      this.otherDigits = numStr.slice(1).split('');
     }
   }
 }
@@ -63,9 +70,11 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div v-for="(digit, index) in defaultDigits" :key="index" class="digit">
-          <p v-if="index < 4 - totalMembers.toString().length">0</p>
-          <p v-else>{{ totalMembers.toString()[index - (4 - totalMembers.toString().length)] }}</p>
+        <div>
+          <p>{{ firstDigit }}</p>
+        </div>
+        <div class="nums">
+          <p v-for="(digit, index) in otherDigits" :key="index">{{ digit }}</p>
         </div>
       </div>
     </nav>
@@ -111,20 +120,19 @@ main {
   gap: 20px;
 }
 
-.digit {
+.nums {
   display: flex;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
-  width: 30px; /* Ширина каждой клетки */
-  height: 30px; /* Высота каждой клетки */
+  justify-content: space-between;
+}
+
+p {
   background: #ffffff;
+  padding: 12px;
   border-radius: 5px;
   font-size: 20px;
   color: #000;
   font-weight: 700;
-}
-
-p {
-  margin: 0;
 }
 </style>
