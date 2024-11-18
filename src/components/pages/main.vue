@@ -72,7 +72,7 @@ export default {
     async fetchTotalMembers() {
       try {
         const response = await axios.get(
-          'https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members'
+          'https://work-2-tau.vercel.app/'
         );
         this.totalMembers = response.data.totalMembers.toString().padStart(4, '0'); // Дополняем нулями до 4 символов
         console.log('Total Members:', this.totalMembers);
