@@ -1,64 +1,3 @@
-<script>
-import axios from 'axios';
-import Background from '@/components/UI/bg.vue'
-import Headers from '@/components/UI/header.vue'
-import Footers from '@/components/UI/footer.vue'
-import Ref from './ref.vue'
-import Task from './task.vue'
-
-export default {
-  components: {
-    Background,
-    Headers,
-    Footers,
-    Ref,
-    Task
-  },
-  data() {
-    return {
-      show: 0,
-      totalMembers: 0, // Добавляем переменную для хранения общего количества участников
-      digits: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
-    }
-  },
-  async mounted() {
-    window.Telegram.WebApp.MainButton.hide()
-    window.Telegram.WebApp.BackButton.onClick(() => {
-      this.show = 0
-      window.Telegram.WebApp.BackButton.hide()
-    })
-
-    // Вызываем метод для получения данных при монтировании компонента
-    await this.fetchTotalMembers();
-  },
-  methods: {
-    openRef() {
-      this.show = 1
-      window.Telegram.WebApp.BackButton.show()
-    },
-    openTask() {
-      this.show = 2
-      window.Telegram.WebApp.BackButton.show()
-    },
-    async fetchTotalMembers() {
-      // Замените URL на ваш реальный URL для получения данных
-      try {
-        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
-        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
-        this.updateDigits(this.totalMembers);
-        console.log('Total Members Digits:', this.digits.join(' ')); // Отладочный вывод
-      } catch (error) {
-        console.error('There was an error fetching the total members!', error);
-      }
-    },
-    updateDigits(num) {
-      const numStr = num.toString().padStart(4, '0'); // Заполняем нулями до 4 символов
-      this.digits = numStr.split('');
-    }
-  }
-}
-</script>
-
 <template>
   <Background />
   <Headers :data="show" />
@@ -79,18 +18,77 @@ export default {
   <Task v-if="show === 2" />
 </template>
 
+<script>
+import axios from 'axios';
+import Background from '@/components/UI/bg.vue'
+import Headers from '@/components/UI/header.vue'
+import Footers from '@/components/UI/footer.vue'
+import Ref from './ref.vue'
+import Task from './task.vue'
+
+export default {
+  components: {
+    Background,
+    Headers,
+    Footers,
+    Ref,
+    Task
+  },
+  data() {
+    return {
+      show: 0,
+      totalMembers: 0,
+      digits: ['0', '0', '0', '0'],
+    }
+  },
+  async mounted() {
+    window.Telegram.WebApp.MainButton.hide()
+    window.Telegram.WebApp.BackButton.onClick(() => {
+      this.show = 0
+      window.Telegram.WebApp.BackButton.hide()
+    })
+
+    await this.fetchTotalMembers();
+  },
+  methods: {
+    openRef() {
+      this.show = 1
+      window.Telegram.WebApp.BackButton.show()
+    },
+    openTask() {
+      this.show = 2
+      window.Telegram.WebApp.BackButton.show()
+    },
+    async fetchTotalMembers() {
+      try {
+        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
+        this.totalMembers = response.data.totalMembers;
+        this.updateDigits(this.totalMembers);
+        console.log('Total Members Digits:', this.digits.join(' '));
+      } catch (error) {
+        console.error('There was an error fetching the total members!', error);
+      }
+    },
+    updateDigits(num) {
+      const numStr = num.toString().padStart(4, '0');
+      this.digits = numStr.split('');
+    }
+  }
+}
+</script>
+
 <style scoped>
 main {
   position: absolute;
-    z-index: 10;
-    color: aliceblue;
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  z-index: 10;
+  color: aliceblue;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cnt {
@@ -119,8 +117,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px; /* Ширина каждой клетки */
-  height: 30px; /* Высота каждой клетки */
+  width: 30px;
+  height: 30px;
   background: #ffffff;
   border-radius: 5px;
   font-size: 20px;
