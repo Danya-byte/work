@@ -18,6 +18,7 @@ export default {
     return {
       show: 0,
       totalMembers: 0, // Добавляем переменную для хранения общего количества участников
+      defaultDigits: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
     }
   },
   async mounted() {
@@ -62,14 +63,9 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div v-if="totalMembers < 100" class="digit">
-          <p>0</p>
-        </div>
-        <div v-if="totalMembers < 1000" class="digit">
-          <p>0</p>
-        </div>
-        <div v-for="(digit, index) in totalMembers.toString().split('')" :key="index" class="digit">
-          <p>{{ digit }}</p>
+        <div v-for="(digit, index) in defaultDigits" :key="index" class="digit">
+          <p v-if="index < 4 - totalMembers.toString().length">0</p>
+          <p v-else>{{ totalMembers.toString()[index - (4 - totalMembers.toString().length)] }}</p>
         </div>
       </div>
     </nav>
