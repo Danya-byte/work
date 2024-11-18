@@ -14,6 +14,16 @@ const pool = new Pool({
   port: 5432,
 });
 
+// Проверка подключения к базе данных
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error connecting to the database:', err.stack);
+  } else {
+    console.log('Successfully connected to the database');
+    release();
+  }
+});
+
 // Форматирование числа с пробелами
 function formatNumberWithSpaces(num) {
   const numStr = num.toString().padStart(4, '0'); // Приводим к длине 4 с ведущими нулями

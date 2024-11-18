@@ -71,9 +71,7 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get(
-          'https://work-2-tau.vercel.app/api/total-members' // Исправленный URL
-        );
+        const response = await axios.get('https://work-2-tau.vercel.app/api/total-members');
         console.log('Response from server:', response.data); // Логируем ответ от сервера
         if (response.data && response.data.totalMembers !== undefined) {
           this.totalMembers = response.data.totalMembers.toString().padStart(4, '0'); // Дополняем нулями до 4 символов
