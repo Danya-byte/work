@@ -62,8 +62,11 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div v-for="(digit, index) in totalMembers" :key="index" class="digit">
-          <p>{{ digit }}</p>
+        <div>
+          <p>{{ totalMembers[0] }}</p>
+        </div>
+        <div class="nums">
+          <p v-for="(digit, index) in totalMembers.slice(1)" :key="index">{{ digit }}</p>
         </div>
       </div>
     </nav>
@@ -109,20 +112,19 @@ main {
   gap: 20px;
 }
 
-.digit {
+.nums {
   display: flex;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
-  width: 30px; /* Ширина каждой клетки */
-  height: 30px; /* Высота каждой клетки */
+  justify-content: space-between;
+}
+
+p {
   background: #ffffff;
+  padding: 12px;
   border-radius: 5px;
   font-size: 20px;
   color: #000;
   font-weight: 700;
-}
-
-p {
-  margin: 0;
 }
 </style>
