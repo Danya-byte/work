@@ -1,4 +1,5 @@
 <script>
+import axios from 'axios';
 import Background from '@/components/UI/bg.vue'
 import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
@@ -16,14 +17,18 @@ export default {
   data() {
     return {
       show: 0,
+      totalMembers: 0, // Добавляем переменную для хранения общего количества участников
     }
   },
-  mounted() {
+  async mounted() {
     window.Telegram.WebApp.MainButton.hide()
     window.Telegram.WebApp.BackButton.onClick(() => {
       this.show = 0
       window.Telegram.WebApp.BackButton.hide()
     })
+
+    // Вызываем метод для получения данных при монтировании компонента
+    await this.fetchTotalMembers();
   },
   methods: {
     openRef() {
@@ -33,6 +38,15 @@ export default {
     openTask() {
       this.show = 2
       window.Telegram.WebApp.BackButton.show()
+    },
+    async fetchTotalMembers() {
+      // Замените URL на ваш реальный URL для получения данных
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/api/total-members');
+        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
+      } catch (error) {
+        console.error('There was an error fetching the total members!', error);
+      }
     }
   }
 }
@@ -48,12 +62,7 @@ export default {
       </div>
       <div class="count">
         <div>
-          <p>2</p>
-        </div>
-        <div class="nums">
-          <p>8</p>
-          <p>9</p>
-          <p>0</p>
+          <p>{{ totalMembers }}</p>
         </div>
       </div>
     </nav>
