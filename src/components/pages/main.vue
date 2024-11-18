@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: '0000', // Строка, где каждое число отобразится как отдельный символ
+      totalMembers: '0000', // Число, которое придёт с сервера, изначально — 0000
     };
   },
   async mounted() {
@@ -42,8 +42,8 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
-        this.totalMembers = response.data.totalMembers || '0000'; // Обрабатываем данные
+        const response = await axios.get('https://your-api-url/api/total-members');
+        this.totalMembers = response.data.totalMembers || '0000'; // Данные с сервера
         console.log('Total Members:', this.totalMembers);
       } catch (error) {
         console.error('Error fetching total members:', error);
@@ -62,7 +62,8 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div v-for="(digit, index) in totalMembers" :key="index" class="digit">
+        <!-- Разбиваем строку на отдельные цифры и рендерим -->
+        <div v-for="(digit, index) in totalMembers.split('')" :key="index" class="digit">
           <p>{{ digit }}</p>
         </div>
       </div>
@@ -89,10 +90,12 @@ main {
 
 .cnt {
   display: grid;
-  gap: 10px;
-  padding: 15px;
-  backdrop-filter: blur(30px);
+  gap: 15px;
+  padding: 20px;
+  backdrop-filter: blur(20px);
+  background-color: rgba(0, 0, 0, 0.7); /* Чёрный фон с прозрачностью */
   border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .total {
@@ -105,7 +108,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px; /* Уменьшите пространство между цифрами, если необходимо */
+  gap: 10px; /* Расстояние между цифрами */
 }
 
 .digit {
@@ -115,14 +118,15 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
-  font-size: 24px; /* Увеличьте размер шрифта для лучшей видимости */
-  font-weight: 700;
+  min-width: 40px; /* Ширина цифры */
+  min-height: 40px; /* Высота цифры */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Тень для цифр */
 }
 
 p {
-  margin: 0;
+  font-size: 22px; /* Размер шрифта */
   color: #000;
+  font-weight: 700;
+  margin: 0;
 }
 </style>
