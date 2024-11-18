@@ -69,6 +69,12 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
+        <div v-if="totalMembers < 100" class="digit">
+          <p>0</p>
+        </div>
+        <div v-if="totalMembers < 1000" class="digit">
+          <p>0</p>
+        </div>
         <div v-for="(digit, index) in totalMembersDigits" :key="index" class="digit">
           <p>{{ digit }}</p>
         </div>
