@@ -45,10 +45,15 @@ export default {
       try {
         const response = await axios.get('http://your-vercel-app-url.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
-        this.totalMembersDigits = this.totalMembers.toString().split(''); // Разбиваем число на символы
+        this.totalMembersDigits = this.padNumber(this.totalMembers, 5); // Заполняем число нулями до 5 символов
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
       }
+    },
+    padNumber(num, size) {
+      let s = num.toString();
+      while (s.length < size) s = "0" + s;
+      return s.split('');
     }
   }
 }
