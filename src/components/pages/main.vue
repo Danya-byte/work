@@ -105,7 +105,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 5px; /* Уменьшите пространство между цифрами, если необходимо */
 }
 
 .digit {
@@ -117,12 +117,12 @@ main {
   justify-content: center;
   min-width: 40px;
   min-height: 40px;
+  font-size: 24px; /* Увеличьте размер шрифта для лучшей видимости */
+  font-weight: 700;
 }
 
 p {
-  font-size: 20px;
-  color: #000;
-  font-weight: 700;
   margin: 0;
+  color: #000;
 }
 </style>
