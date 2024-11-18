@@ -42,7 +42,7 @@ export default {
     async fetchTotalMembers() {
       // Замените URL на ваш реальный URL для получения данных
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/total-members');
+        const response = await axios.get('https://your-vercel-app-url.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
       } catch (error) {
         console.error('There was an error fetching the total members!', error);

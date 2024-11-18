@@ -2,17 +2,16 @@ from flask import Flask, jsonify
 import asyncio
 import asyncpg
 from concurrent.futures import ThreadPoolExecutor
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Добавляем CORS
 
 # Глобальная переменная для пула подключений
 pool = None
 
 # Глобальный пул потоков для выполнения асинхронных задач
 executor = ThreadPoolExecutor(max_workers=5)
-
-# Глобальный цикл событий
-main_loop = asyncio.new_event_loop()
 
 
 async def init_pool():
@@ -69,17 +68,13 @@ async def get_total_members():
     return count
 
 
-def run_async_task(coro):
-    return asyncio.run_coroutine_threadsafe(coro, main_loop).result()
-
-
 @app.route('/api/total-members', methods=['GET'])
 def total_members():
     if pool is None:
         return jsonify({'error': 'Database pool is not initialized'}), 500
 
     # Запускаем асинхронную задачу в отдельном потоке
-    future = executor.submit(run_async_task, get_total_members())
+    future = executor.submit(asyncio.run, get_total_members())
     total = future.result()
 
     return jsonify({'totalMembers': total})
@@ -88,8 +83,8 @@ def total_members():
 def main():
     global pool
     try:
-        pool = run_async_task(init_pool())  # Используем один и тот же цикл для инициализации пула
-        run_async_task(initialize_db())  # И для инициализации базы данных
+        pool = asyncio.run(init_pool())  # Используем asyncio.run для инициализации пула
+        asyncio.run(initialize_db())  # И для инициализации базы данных
     except RuntimeError as e:
         print(f"Failed to initialize database: {e}")
         return
