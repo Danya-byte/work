@@ -18,6 +18,7 @@ export default {
     return {
       show: 0,
       totalMembers: 0, // Добавляем переменную для хранения общего количества участников
+      totalMembersDigits: [], // Массив для хранения символов числа
     }
   },
   async mounted() {
@@ -42,8 +43,9 @@ export default {
     async fetchTotalMembers() {
       // Замените URL на ваш реальный URL для получения данных
       try {
-        const response = await axios.get('https://your-vercel-app-url.vercel.app/api/total-members');
+        const response = await axios.get('http://your-vercel-app-url.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
+        this.totalMembersDigits = this.totalMembers.toString().split(''); // Разбиваем число на символы
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
       }
@@ -61,8 +63,8 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <div>
-          <p>{{ totalMembers }}</p>
+        <div v-for="(digit, index) in totalMembersDigits" :key="index" class="digit">
+          <p>{{ digit }}</p>
         </div>
       </div>
     </nav>
@@ -108,19 +110,20 @@ main {
   gap: 20px;
 }
 
-.nums {
+.digit {
   display: flex;
-  gap: 10px;
   align-items: center;
-  justify-content: space-between;
-}
-
-p {
+  justify-content: center;
+  width: 30px; /* Ширина каждой клетки */
+  height: 30px; /* Высота каждой клетки */
   background: #ffffff;
-  padding: 12px;
   border-radius: 5px;
   font-size: 20px;
   color: #000;
   font-weight: 700;
+}
+
+p {
+  margin: 0;
 }
 </style>
