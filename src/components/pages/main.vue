@@ -18,7 +18,7 @@ export default {
     return {
       show: 0,
       totalMembers: 0, // Добавляем переменную для хранения общего количества участников
-      totalMembersDigits: [], // Массив для хранения символов числа
+      totalMembersDigits: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
     }
   },
   async mounted() {
@@ -45,7 +45,7 @@ export default {
       try {
         const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
-        this.totalMembersDigits = this.padNumber(this.totalMembers, 5); // Заполняем число нулями до 5 символов
+        this.totalMembersDigits = this.padNumber(this.totalMembers, 4); // Заполняем число нулями до 4 символов
         console.log('Total Members Digits:', this.totalMembersDigits); // Отладочный вывод
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
