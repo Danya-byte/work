@@ -1,9 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cors');
 
 const app = express();
-app.use(cors());
 
 // Подключение к базе данных
 const pool = new Pool({
@@ -39,14 +37,8 @@ app.get('/api/total-members', async (req, res) => {
     const formattedMembers = formatNumberWithSpaces(totalMembers); // Форматируем с пробелами
 
     // Логирование данных перед отправкой ответа
-    console.log('Database result:', result.rows[0]);
     console.log('Total members:', totalMembers);
     console.log('Formatted members:', formattedMembers);
-
-    // Логирование запроса
-    const requestUrl = req.headers.referer || req.headers.origin || 'Unknown';
-    const logQuery = 'INSERT INTO request_logs (request_url, request_time) VALUES ($1, $2)';
-    await client.query(logQuery, [requestUrl, new Date()]);
 
     res.json({ totalMembers: formattedMembers }); // Возвращаем строку с пробелами
   } catch (error) {
@@ -76,15 +68,6 @@ async function initializeDatabase() {
         EWE BIGINT,
         EWI BIGINT,
         ECI BIGINT
-      )
-    `);
-
-    // Создание таблицы для логирования запросов
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS request_logs (
-        id SERIAL PRIMARY KEY,
-        request_url TEXT NOT NULL,
-        request_time TIMESTAMP NOT NULL
       )
     `);
 
