@@ -21,13 +21,17 @@ function formatNumberWithSpaces(num) {
 }
 
 // Получение общего количества участников
-app.get('/api/TotalMembers', async (req, res) => {
+app.get('/api/total-members', async (req, res) => {
   const client = await pool.connect();
   try {
     const result = await client.query('SELECT COUNT(*) FROM participants');
     const totalMembers = parseInt(result.rows[0].count, 10) || 0; // Количество участников
     const formattedMembers = formatNumberWithSpaces(totalMembers); // Форматируем с пробелами
-    console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers}`);
+
+    // Логирование данных перед отправкой ответа
+    console.log('Database result:', result.rows[0]);
+    console.log('Total members:', totalMembers);
+    console.log('Formatted members:', formattedMembers);
 
     // Логирование запроса
     const requestUrl = req.headers.referer || req.headers.origin || 'Unknown';
