@@ -41,7 +41,7 @@ export default {
       window.Telegram.WebApp.BackButton.show();
     },
     async fetchTotalMembers() {
-      const url = 'https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members';
+      const url = 'https://work-indol-one.vercel.app/api/total-members';
       console.log('Fetching total members from:', url); // Логируем URL
       try {
         const response = await axios.get(url);
