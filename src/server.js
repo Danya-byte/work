@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-// Настройки подключения к базе данных
+// Подключение к базе данных
 const pool = new Pool({
   user: 'postgres',
   host: '127.0.0.1',
@@ -14,7 +14,29 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Инициализация таблиц в базе данных
+// Функция для форматирования числа
+function formatNumber(num) {
+  return num.toString().padStart(4, '0'); // Возвращаем строку с нулями
+}
+
+// Получение общего количества участников
+app.get('/api/total-members', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('SELECT COUNT(*) FROM participants');
+    const totalMembers = parseInt(result.rows[0].count, 10) || 0; // Получаем общее количество
+    const formattedMembers = formatNumber(totalMembers); // Форматируем как строку
+    console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers}`);
+    res.json({ totalMembers: formattedMembers }); // Отправляем строку
+  } catch (error) {
+    console.error('Error fetching total members:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    client.release();
+  }
+});
+
+// Инициализация базы данных
 async function initializeDatabase() {
   const client = await pool.connect();
   try {
@@ -35,41 +57,11 @@ async function initializeDatabase() {
         ECI BIGINT
       )
     `);
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS ambassadors (
-        id SERIAL PRIMARY KEY,
-        username TEXT NOT NULL,
-        chat_id BIGINT NOT NULL
-      )
-    `);
     console.log('Database initialized');
   } finally {
     client.release();
   }
 }
-
-// Форматирование числа
-function formatNumber(num) {
-  const numStr = num.toString().padStart(4, '0'); // Заполняем нулями до 4 символов
-  return numStr.split(''); // Разделяем строку на отдельные цифры
-}
-
-// Получение общего количества участников
-app.get('/api/total-members', async (req, res) => {
-  const client = await pool.connect();
-  try {
-    const result = await client.query('SELECT COUNT(*) FROM participants');
-    const totalMembers = parseInt(result.rows[0].count, 10);
-    const formattedMembers = formatNumber(totalMembers);
-    console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers.join(' ')}`);
-    res.json({ totalMembers: formattedMembers });
-  } catch (error) {
-    console.error('Error fetching total members:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  } finally {
-    client.release();
-  }
-});
 
 // Запуск сервера
 const PORT = process.env.PORT || 5000;

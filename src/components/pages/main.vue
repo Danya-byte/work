@@ -1,10 +1,10 @@
 <script>
 import axios from 'axios';
-import Background from '@/components/UI/bg.vue'
-import Headers from '@/components/UI/header.vue'
-import Footers from '@/components/UI/footer.vue'
-import Ref from './ref.vue'
-import Task from './task.vue'
+import Background from '@/components/UI/bg.vue';
+import Headers from '@/components/UI/header.vue';
+import Footers from '@/components/UI/footer.vue';
+import Ref from './ref.vue';
+import Task from './task.vue';
 
 export default {
   components: {
@@ -12,45 +12,45 @@ export default {
     Headers,
     Footers,
     Ref,
-    Task
+    Task,
   },
   data() {
     return {
       show: 0,
-      totalMembers: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
-    }
+      totalMembers: '0000', // Строка, где каждое число отобразится как отдельный символ
+    };
   },
   async mounted() {
-    window.Telegram.WebApp.MainButton.hide()
+    // Прячем кнопки Telegram при загрузке
+    window.Telegram.WebApp.MainButton.hide();
     window.Telegram.WebApp.BackButton.onClick(() => {
-      this.show = 0
-      window.Telegram.WebApp.BackButton.hide()
-    })
+      this.show = 0;
+      window.Telegram.WebApp.BackButton.hide();
+    });
 
-    // Вызываем метод для получения данных при монтировании компонента
+    // Загружаем данные
     await this.fetchTotalMembers();
   },
   methods: {
     openRef() {
-      this.show = 1
-      window.Telegram.WebApp.BackButton.show()
+      this.show = 1;
+      window.Telegram.WebApp.BackButton.show();
     },
     openTask() {
-      this.show = 2
-      window.Telegram.WebApp.BackButton.show()
+      this.show = 2;
+      window.Telegram.WebApp.BackButton.show();
     },
     async fetchTotalMembers() {
-      // Замените URL на ваш реальный URL для получения данных
       try {
-        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
-        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит массив цифр
-        console.log('Total Members Digits:', this.totalMembers.join(' ')); // Отладочный вывод
+        const response = await axios.get('https://your-api-url/api/total-members');
+        this.totalMembers = response.data.totalMembers || '0000'; // Обрабатываем данные
+        console.log('Total Members:', this.totalMembers);
       } catch (error) {
-        console.error('There was an error fetching the total members!', error);
+        console.error('Error fetching total members:', error);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <template>
