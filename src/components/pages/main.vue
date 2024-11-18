@@ -42,7 +42,7 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get('https://work-ol89to7as-danyas-projects-f55a11c7.vercel.app/api/total-members');
+        const response = await axios.get('https://work-8enqno6vr-danyas-projects-f55a11c7.vercel.app/api/total-members');
         const totalMembers = response.data.totalMembers || '0 0 0 0'; // Данные с сервера
         this.totalMembers = totalMembers.padStart(4, '0'); // Дополняем нулями до 4 цифр
         console.log('Total Members:', this.totalMembers);
