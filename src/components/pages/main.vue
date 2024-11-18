@@ -74,8 +74,13 @@ export default {
         const response = await axios.get(
           'https://work-2-tau.vercel.app/'
         );
-        this.totalMembers = response.data.totalMembers.toString().padStart(4, '0'); // Дополняем нулями до 4 символов
-        console.log('Total Members:', this.totalMembers);
+        if (response.data && response.data.totalMembers !== undefined) {
+          this.totalMembers = response.data.totalMembers.toString().padStart(4, '0'); // Дополняем нулями до 4 символов
+          console.log('Total Members:', this.totalMembers);
+        } else {
+          console.error('Total members property is missing in the response');
+          this.totalMembers = "0000"; // Устанавливаем "0000" в случае отсутствия свойства
+        }
       } catch (error) {
         console.error('There was an error fetching the total members!', error);
         this.totalMembers = "0000"; // Устанавливаем "0000" в случае ошибки
