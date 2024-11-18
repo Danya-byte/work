@@ -28,6 +28,12 @@ app.get('/api/total-members', async (req, res) => {
     const totalMembers = parseInt(result.rows[0].count, 10) || 0; // Количество участников
     const formattedMembers = formatNumberWithSpaces(totalMembers); // Форматируем с пробелами
     console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers}`);
+
+    // Логирование запроса
+    const requestUrl = req.headers.referer || req.headers.origin || 'Unknown';
+    const logQuery = 'INSERT INTO request_logs (request_url, request_time) VALUES ($1, $2)';
+    await client.query(logQuery, [requestUrl, new Date()]);
+
     res.json({ totalMembers: formattedMembers }); // Возвращаем строку с пробелами
   } catch (error) {
     console.error('Error fetching total members:', error);
@@ -58,6 +64,16 @@ async function initializeDatabase() {
         ECI BIGINT
       )
     `);
+
+    // Создание таблицы для логирования запросов
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS request_logs (
+        id SERIAL PRIMARY KEY,
+        request_url TEXT NOT NULL,
+        request_time TIMESTAMP NOT NULL
+      )
+    `);
+
     console.log('Database initialized');
   } finally {
     client.release();
