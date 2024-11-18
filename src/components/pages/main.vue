@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: '0000', // Изначально 4 цифры "0"
+      totalMembers: '0 0 0 0', // Изначально 4 нуля, разделенных пробелами
     };
   },
   async mounted() {
@@ -42,12 +42,12 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get('https://work-indol-one.vercel.app/api/total-members');
-        const totalMembers = response.data.totalMembers || '0 0 0 0'; // Данные с сервера
-        this.totalMembers = totalMembers.padStart(4, '0'); // Дополняем нулями до 4 цифр
+        const response = await axios.get('https://work-8enqno6vr-danyas-projects-f55a11c7.vercel.app/api/total-members');
+        this.totalMembers = response.data.totalMembers || '0 0 0 0'; // Данные с сервера или "0 0 0 0" по умолчанию
         console.log('Total Members:', this.totalMembers);
       } catch (error) {
         console.error('Error fetching total members:', error);
+        this.totalMembers = '0 0 0 0'; // Устанавливаем "0 0 0 0" в случае ошибки
       }
     },
   },
@@ -64,7 +64,7 @@ export default {
       </div>
       <div class="count">
         <!-- Разбиваем строку на отдельные цифры и рендерим -->
-        <div v-for="(digit, index) in totalMembers.split('')" :key="index" class="digit">
+        <div v-for="(digit, index) in totalMembers.split(' ')" :key="index" class="digit">
           <p>{{ digit }}</p>
         </div>
       </div>
