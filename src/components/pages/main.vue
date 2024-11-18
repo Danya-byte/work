@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: '0000', // Число, которое придёт с сервера, изначально — 0000
+      totalMembers: '0', // Изначально одно число "0", без клетки
     };
   },
   async mounted() {
@@ -42,8 +42,8 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get('https://your-api-url/api/total-members');
-        this.totalMembers = response.data.totalMembers || '0000'; // Данные с сервера
+        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
+        this.totalMembers = response.data.totalMembers || '0'; // Данные с сервера
         console.log('Total Members:', this.totalMembers);
       } catch (error) {
         console.error('Error fetching total members:', error);
@@ -62,8 +62,8 @@ export default {
         <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
       </div>
       <div class="count">
-        <!-- Разбиваем строку на отдельные цифры и рендерим -->
-        <div v-for="(digit, index) in totalMembers.split('')" :key="index" class="digit">
+        <!-- Разбиваем строку по пробелам и рендерим -->
+        <div v-for="(digit, index) in totalMembers.split(' ')" :key="index" class="digit">
           <p>{{ digit }}</p>
         </div>
       </div>

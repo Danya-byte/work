@@ -14,9 +14,10 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Функция для форматирования числа
-function formatNumber(num) {
-  return num.toString().padStart(4, '0'); // Возвращаем строку с нулями
+// Форматирование числа с пробелами
+function formatNumberWithSpaces(num) {
+  const numStr = num.toString().padStart(4, '0'); // Приводим к длине 4 с ведущими нулями
+  return numStr.split('').join(' '); // Разделяем цифры пробелами
 }
 
 // Получение общего количества участников
@@ -24,10 +25,10 @@ app.get('/api/total-members', async (req, res) => {
   const client = await pool.connect();
   try {
     const result = await client.query('SELECT COUNT(*) FROM participants');
-    const totalMembers = parseInt(result.rows[0].count, 10) || 0; // Получаем общее количество
-    const formattedMembers = formatNumber(totalMembers); // Форматируем как строку
+    const totalMembers = parseInt(result.rows[0].count, 10) || 0; // Количество участников
+    const formattedMembers = formatNumberWithSpaces(totalMembers); // Форматируем с пробелами
     console.log(`Total members: ${totalMembers}, Formatted: ${formattedMembers}`);
-    res.json({ totalMembers: formattedMembers }); // Отправляем строку
+    res.json({ totalMembers: formattedMembers }); // Возвращаем строку с пробелами
   } catch (error) {
     console.error('Error fetching total members:', error);
     res.status(500).json({ error: 'Internal Server Error' });
