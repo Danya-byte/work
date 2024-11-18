@@ -1,3 +1,25 @@
+<template>
+  <Background />
+  <Headers :data="show" />
+  <main>
+    <nav class="cnt">
+      <div class="total">
+        <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">
+          Total members
+        </h1>
+      </div>
+      <div class="count">
+        <div v-for="(digit, index) in formattedMembers" :key="index" class="digit">
+          <p class="des">{{ digit }}</p>
+        </div>
+      </div>
+    </nav>
+  </main>
+  <Footers @refOpen="openRef" @taskOpen="openTask" />
+  <Ref v-if="show === 1" />
+  <Task v-if="show === 2" />
+</template>
+
 <script>
 import axios from 'axios';
 import Background from '@/components/UI/bg.vue';
@@ -12,23 +34,30 @@ export default {
     Headers,
     Footers,
     Ref,
-    Task,
+    Task
   },
   data() {
     return {
       show: 0,
-      totalMembers: '0 0 0 0', // Изначально 4 нуля, разделенных пробелами
+      totalMembers: "0000", // Изначально 4 нуля
     };
   },
+  computed: {
+    formattedMembers() {
+      const membersArray = this.totalMembers.toString().split('').map(Number);
+      while (membersArray.length < 4) {
+        membersArray.unshift(0);
+      }
+      return membersArray;
+    }
+  },
   async mounted() {
-    // Прячем кнопки Telegram при загрузке
     window.Telegram.WebApp.MainButton.hide();
     window.Telegram.WebApp.BackButton.onClick(() => {
       this.show = 0;
       window.Telegram.WebApp.BackButton.hide();
     });
 
-    // Загружаем данные
     await this.fetchTotalMembers();
   },
   methods: {
@@ -41,41 +70,20 @@ export default {
       window.Telegram.WebApp.BackButton.show();
     },
     async fetchTotalMembers() {
-      const url = 'https://work-2-tau.vercel.app/api/total-members';
-      console.log('Fetching total members from:', url); // Логируем URL
       try {
-        const response = await axios.get(url);
-        this.totalMembers = response.data.totalMembers || '0 0 0 0'; // Данные с сервера или "0 0 0 0" по умолчанию
+        const response = await axios.get(
+          'https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members'
+        );
+        this.totalMembers = response.data.totalMembers.toString().padStart(4, '0'); // Дополняем нулями до 4 символов
         console.log('Total Members:', this.totalMembers);
       } catch (error) {
-        console.error('Error fetching total members:', error);
-        this.totalMembers = '0 0 0 0'; // Устанавливаем "0 0 0 0" в случае ошибки
+        console.error('There was an error fetching the total members!', error);
+        this.totalMembers = "0000"; // Устанавливаем "0000" в случае ошибки
       }
-    },
-  },
+    }
+  }
 };
 </script>
-
-<template>
-  <Background />
-  <Headers :data="show" />
-  <main>
-    <nav class="cnt">
-      <div class="total">
-        <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
-      </div>
-      <div class="count">
-        <!-- Разбиваем строку на отдельные цифры и рендерим -->
-        <div v-for="(digit, index) in totalMembers.split(' ')" :key="index" class="digit">
-          <p>{{ digit }}</p>
-        </div>
-      </div>
-    </nav>
-  </main>
-  <Footers @refOpen="openRef" @taskOpen="openTask" />
-  <Ref v-if="show === 1" />
-  <Task v-if="show === 2" />
-</template>
 
 <style scoped>
 main {
@@ -91,14 +99,16 @@ main {
   justify-content: center;
 }
 
+.des {
+  color: rgba(255, 255, 255, 0.807);
+}
+
 .cnt {
   display: grid;
-  gap: 15px;
-  padding: 20px;
-  backdrop-filter: blur(20px);
-  background-color: rgba(0, 0, 0, 0.7); /* Чёрный фон с прозрачностью */
+  gap: 10px;
+  padding: 15px;
+  backdrop-filter: blur(30px);
   border-radius: 15px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .total {
@@ -111,23 +121,24 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px; /* Расстояние между цифрами */
+  gap: 10px;
 }
 
 .digit {
-  background: #ffffff;
+  background: #01bbee9a;
   padding: 12px;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px; /* Ширина цифры */
-  min-height: 40px; /* Высота цифры */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Тень для цифр */
+  min-width: 40px;
+  min-height: 40px;
+  width: max-content;
+  height: max-content;
 }
 
 p {
-  font-size: 22px; /* Размер шрифта */
+  font-size: 20px;
   color: #000;
   font-weight: 700;
   margin: 0;
