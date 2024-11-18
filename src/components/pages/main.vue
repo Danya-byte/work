@@ -1,3 +1,79 @@
+<script>
+import axios from 'axios';
+import Background from '@/components/UI/bg.vue'
+import Headers from '@/components/UI/header.vue'
+import Footers from '@/components/UI/footer.vue'
+import Ref from './ref.vue'
+import Task from './task.vue'
+
+export default {
+  components: {
+    Background,
+    Headers,
+    Footers,
+    Ref,
+    Task
+  },
+  data() {
+    return {
+      show: 0,
+      totalMembers: ['0', '0', '0', '0'], // Массив для хранения символов числа, заполненный нулями по умолчанию
+    }
+  },
+  async mounted() {
+    window.Telegram.WebApp.MainButton.hide()
+    window.Telegram.WebApp.BackButton.onClick(() => {
+      this.show = 0
+      window.Telegram.WebApp.BackButton.hide()
+    })
+
+    // Вызываем метод для получения данных при монтировании компонента
+    await this.fetchTotalMembers();
+  },
+  methods: {
+    openRef() {
+      this.show = 1
+      window.Telegram.WebApp.BackButton.show()
+    },
+    openTask() {
+      this.show = 2
+      window.Telegram.WebApp.BackButton.show()
+    },
+    async fetchTotalMembers() {
+      // Замените URL на ваш реальный URL для получения данных
+      try {
+        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
+        this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит массив цифр
+        console.log('Total Members Digits:', this.totalMembers.join(' ')); // Отладочный вывод
+      } catch (error) {
+        console.error('There was an error fetching the total members!', error);
+      }
+    }
+  }
+}
+</script>
+
+<template>
+  <Background />
+  <Headers :data="show" />
+  <main>
+    <nav class="cnt">
+      <div class="total">
+        <h1 style="font-family: Inter; font-size: 19px; color: #f0f0f0;">Total members</h1>
+      </div>
+      <div class="count">
+        <div v-for="(digit, index) in totalMembers" :key="index" class="digit">
+          <p>{{ digit }}</p>
+        </div>
+      </div>
+    </nav>
+  </main>
+  <Footers @refOpen="openRef" @taskOpen="openTask" />
+  <Ref v-if="show === 1" />
+  <Task v-if="show === 2" />
+</template>
+
+<style scoped>
 main {
   position: absolute;
   z-index: 10;
@@ -49,3 +125,4 @@ p {
   font-weight: 700;
   margin: 0;
 }
+</style>
