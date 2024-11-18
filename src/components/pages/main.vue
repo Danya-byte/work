@@ -42,7 +42,7 @@ export default {
     },
     async fetchTotalMembers() {
       try {
-        const response = await axios.get('https://your-api-url/api/total-members');
+        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers || '0000'; // Обрабатываем данные
         console.log('Total Members:', this.totalMembers);
       } catch (error) {
