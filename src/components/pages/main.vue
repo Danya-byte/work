@@ -43,7 +43,7 @@ export default {
     async fetchTotalMembers() {
       // Замените URL на ваш реальный URL для получения данных
       try {
-        const response = await axios.get('http://your-vercel-app-url.vercel.app/api/total-members');
+        const response = await axios.get('https://work-kb8vsybsy-danyas-projects-f55a11c7.vercel.app/api/total-members');
         this.totalMembers = response.data.totalMembers; // Предполагаем, что ответ содержит общее количество участников
         this.totalMembersDigits = this.padNumber(this.totalMembers, 5); // Заполняем число нулями до 5 символов
         console.log('Total Members Digits:', this.totalMembersDigits); // Отладочный вывод
