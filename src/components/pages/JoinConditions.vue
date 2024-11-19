@@ -1,3 +1,18 @@
+<template>
+  <div class="join-board open">
+    <div class="centered-content">
+      <div class="image-container">
+        <img width="80px" height="80px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" alt="reg" />
+      </div>
+      <div class="leader-title">
+        <h1 v-html="headerText" class="header-text"></h1>
+      </div>
+    </div>
+    <Ref v-if="showModal" />
+    <JoinConditions v-else />
+  </div>
+</template>
+
 <script setup>
 import { ref, computed } from 'vue'
 import axios from 'axios';
@@ -61,21 +76,6 @@ const headerText = computed(() => {
     return "";
 })
 </script>
-
-<template>
-  <div class="join-board open">
-    <div class="centered-content">
-      <div class="image-container">
-        <img width="80px" height="80px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" alt="reg" />
-      </div>
-      <div class="leader-title">
-        <h1 v-html="headerText" class="header-text"></h1>
-      </div>
-    </div>
-    <Ref v-if="showModal" />
-    <JoinConditions v-else />
-  </div>
-</template>
 
 <style scoped>
 .join-board {
