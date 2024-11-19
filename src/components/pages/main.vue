@@ -54,12 +54,15 @@ export default {
       console.error('Error fetching total members:', error);
     }
 
-    // Проверка пользователя из локального хранилища
-    const userState = JSON.parse(localStorage.getItem('userState'));
-    if (userState) {
+    // Чтение состояния пользователя из файла
+    try {
+      const response = await axios.get('http://localhost:3000/userState.json');
+      const userState = response.data;
       this.position = userState.position;
       this.referralNumber = userState.referralNumber;
       this.isAmbassador = userState.isAmbassador;
+    } catch (error) {
+      console.error('Error reading user state:', error);
     }
   },
   methods: {

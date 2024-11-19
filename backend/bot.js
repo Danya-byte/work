@@ -1,3 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
+
 const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
                "SBTech_youtube", "Nik7102", "cryptohood_adv",
                "greenchtg", "Igor6i9", "LaLiPaP26", "eeeeergoo",
@@ -12,10 +17,6 @@ const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
              "VenusTraidingPro", "Artgog777", "reshe_tov", "ilyu4ik", "jam_qq", "sepata",
            "fuelghoir" ];
 
-const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
-
-// Токен вашего Telegram-бота
 const token = '8102571059:AAHLHrmuq3Dmu7rtEIKNn0PNPu07UeYnCTU';
 const bot = new TelegramBot(token, { polling: true });
 
@@ -28,13 +29,13 @@ bot.onText(/\/start/, async (msg) => {
     const response = await axios.post('http://localhost:3000/api/check-user', { username, telegram_id });
     const { position, referral_number } = response.data;
 
-    // Сохранение состояния пользователя в локальном хранилище
+    // Сохранение состояния пользователя в файл
     const userState = {
       position: position !== null,
       referralNumber: referral_number,
       isAmbassador: AMBASSADORS.includes(username)
     };
-    localStorage.setItem('userState', JSON.stringify(userState));
+    fs.writeFileSync(path.join(__dirname, 'userState.json'), JSON.stringify(userState));
 
     if (position !== null) {
       bot.sendMessage(chatId, `Welcome back! You are at position ${position}.`, {
