@@ -54,14 +54,12 @@ export default {
       console.error('Error fetching total members:', error);
     }
 
-    // Проверка пользователя
-    try {
-      const response = await axios.post('http://localhost:3000/api/check-user', { username: window.Telegram.WebApp.initDataUnsafe.user.username, telegram_id: window.Telegram.WebApp.initDataUnsafe.user.id });
-      this.position = response.data.position;
-      this.referralNumber = response.data.referral_number;
-      this.isAmbassador = AMBASSADORS.includes(window.Telegram.WebApp.initDataUnsafe.user.username);
-    } catch (error) {
-      console.error('Error checking user:', error);
+    // Проверка пользователя из локального хранилища
+    const userState = JSON.parse(localStorage.getItem('userState'));
+    if (userState) {
+      this.position = userState.position;
+      this.referralNumber = userState.referralNumber;
+      this.isAmbassador = userState.isAmbassador;
     }
   },
   methods: {
@@ -101,6 +99,7 @@ export default {
   <Ref v-if="show === 1 && isAmbassador" />
   <JoinConditions v-else-if="show === 1 && !isAmbassador" />
   <Task v-if="show === 2" />
+  <Leaderboard v-if="isAmbassador" />
 </template>
 
 <style scoped>

@@ -14,6 +14,14 @@ bot.onText(/\/start/, async (msg) => {
     const response = await axios.post('http://localhost:3000/api/check-user', { username, telegram_id });
     const { position, referral_number } = response.data;
 
+    // Сохранение состояния пользователя в локальном хранилище
+    const userState = {
+      position: position !== null,
+      referralNumber: referral_number,
+      isAmbassador: AMBASSADORS.includes(username)
+    };
+    localStorage.setItem('userState', JSON.stringify(userState));
+
     if (position !== null) {
       bot.sendMessage(chatId, `Welcome back! You are at position ${position}.`, {
         reply_markup: {
