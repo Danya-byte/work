@@ -2,10 +2,10 @@
 import Background from '@/components/UI/bg.vue'
 import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
-import Leaderboard from './leaderboard.vue'
+import Ref from './ref.vue'
 import Task from './task.vue'
 import Join from './Join.vue'
-import Headref from './headref.vue'
+import Leaderboard from './leaderboard.vue'
 import axios from 'axios';
 
 const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
@@ -16,7 +16,7 @@ const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
                "vilyam_tim",
                "AlexShamps",
                "Skilful221", "Izzzzznanka", "cooper_ad", "rstmcrew",
-               "tropirich", "MR_FRIKOP", "E_E_E_NEON","makcum52","backend_creator",
+               "tropirich", "MR_FRIKOP", "E_E_E_NEON","makcum52","#",
                "oleksandr_567", "Homiakk2", "Aleksei_jdi", "pavelinvest",
               "Natashkacrypto", "sashaarmy20","aB_Var_666_999", "Floopi_STG",
              "VenusTraidingPro", "Artgog777", "reshe_tov", "ilyu4ik", "jam_qq", "sepata",
@@ -27,10 +27,10 @@ export default {
     Background,
     Headers,
     Footers,
-    Leaderboard,
+    Ref,
     Task,
     Join,
-    Headref
+    Leaderboard
   },
   data() {
     return {
@@ -40,7 +40,7 @@ export default {
       referralNumber: null,
       isAmbassador: false,
       showLeaderboard: false, // Добавлено состояние для отображения лидерборда
-      showHeadref: false // Добавлено состояние для отображения headref
+      showProfile: false // Добавлено состояние для отображения профиля
     }
   },
   async mounted() {
@@ -82,8 +82,8 @@ export default {
         this.showLeaderboard = true;
       }
     },
-    openHeadref() {
-      this.showHeadref = true;
+    openProfile() {
+      this.showProfile = true;
     }
   }
 }
@@ -91,7 +91,7 @@ export default {
 
 <template>
   <Background />
-  <Headers :data="show" />
+  <Headers :data="position" />
   <main>
     <nav class="cnt">
       <div class="total">
@@ -109,11 +109,11 @@ export default {
       </div>
     </nav>
   </main>
-  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard"/>
+  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard" @openProfile="openProfile" />
   <Join v-if="show === 1" />
   <Task v-if="show === 2" />
   <Leaderboard v-if="showLeaderboard" />
-  <Headref v-if="showHeadref" />
+  <Headers v-if="showProfile" :data="position" />
 </template>
 
 <style scoped>

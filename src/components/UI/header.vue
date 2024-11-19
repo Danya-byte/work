@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { tonConnectUI } from '@/api/ton.js'
 
 const props = defineProps({
   data: {
@@ -11,11 +12,7 @@ const props = defineProps({
 const f = ref(false)
 
 const fetchClass = () => {
-    if(props.data == 0) {
-        return 'm'
-    } else {
-        return 'r'
-    }
+    return props.data === 0 ? 'm' : 'r'
 }
 
 const headerClass = computed(() => {
@@ -23,13 +20,16 @@ const headerClass = computed(() => {
 })
 
 const refWindow = () => {
-    if (f.value == false) {
-        f.value = true
-        document.querySelector('.rw').style.display = 'flex'
-    } else {
-        f.value = false
-        document.querySelector('.rw').style.display = 'none'
-    }
+    f.value = !f.value
+    document.querySelector('.rw').style.display = f.value ? 'flex' : 'none'
+}
+
+const connect = () => {
+    setTimeout(() => {
+        if (!document.querySelector('tc-root')) {
+            tonConnectUI()
+        }
+    }, 200)
 }
 </script>
 
@@ -45,6 +45,7 @@ const refWindow = () => {
         </div>
         <div class="rw">
             <p>t.me/GreenwoodsBot..8927</p>
+            <p v-if="props.data !== null">Your position: {{ props.data }}</p>
         </div>
     </div>
 </template>
@@ -100,19 +101,3 @@ p {
     }
 }
 </style>
-
-<script>
-import { tonConnectUI } from '@/api/ton.js'
-
-export default {
-    methods: {
-        connect() {
-            setTimeout(() => {
-                if (!document.querySelector('tc-root')) {
-                    tonConnectUI()
-                }
-            }, 200)
-        }
-    }
-}
-</script>
