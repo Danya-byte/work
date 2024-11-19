@@ -20,6 +20,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
