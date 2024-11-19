@@ -34,6 +34,24 @@ app.get('/api/total-members', async (req, res) => {
   }
 });
 
+app.post('/api/check-user', async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const query = 'SELECT position FROM participants WHERE telegram_id = $1';
+    const result = await pool.query(query, [userId]);
+
+    if (result.rows.length > 0) {
+      res.json({ position: result.rows[0].position });
+    } else {
+      res.json({ position: null });
+    }
+  } catch (error) {
+    console.error('Error checking user:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Запуск сервера
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

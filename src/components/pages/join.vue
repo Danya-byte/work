@@ -1,13 +1,15 @@
 <script setup>
 import { ref, computed } from 'vue'
+import axios from 'axios';
 
 const count = ref(0)
 const tg = window.Telegram.WebApp
+const position = ref(null)
 
 tg.MainButton.show();
 tg.MainButton.text = "Subscribe"
 
-const handleMainButtonClick = () => {
+const handleMainButtonClick = async () => {
     count.value++;
     switch (count.value) {
         case 1:
@@ -19,6 +21,17 @@ const handleMainButtonClick = () => {
         default:
             redirectToHome()
     }
+
+    // Проверка пользователя
+    try {
+        const response = await axios.post('http://localhost:3000/api/check-user', { userId: tg.initDataUnsafe.user.id });
+        position.value = response.data.position;
+        if (position.value !== null) {
+            showModal();
+        }
+    } catch (error) {
+        console.error('Error checking user:', error);
+    }
 }
 
 const updateButton = (text, url) => {
@@ -28,6 +41,10 @@ const updateButton = (text, url) => {
 
 const redirectToHome = () => {
     window.location.href = '/'
+}
+
+const showModal = () => {
+    tg.showAlert(`You are at position ${position.value}`);
 }
 
 tg.onEvent('mainButtonClicked', handleMainButtonClick);
