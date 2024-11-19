@@ -4,7 +4,7 @@ import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Leaderboard from './leaderboard.vue'
 import Task from './task.vue'
-import Join from './Join.vue'
+import Join from './join.vue'
 import axios from 'axios';
 
 const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",

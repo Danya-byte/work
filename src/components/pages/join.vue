@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue'
 import axios from 'axios';
 import Ref from './ref.vue'
-import JoinConditions from './JoinConditions.vue'
 
 const count = ref(0)
 const tg = window.Telegram.WebApp
