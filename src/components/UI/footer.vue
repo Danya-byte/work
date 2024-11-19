@@ -3,7 +3,7 @@ import IconMain from '@/components/icons/IconMain.vue'
 import IconRef from '@/components/icons/IconRef.vue'
 import IconTask from '@/components/icons/IconTask.vue'
 
-defineEmits(['refOpen', 'taskOpen'])
+defineEmits(['refOpen', 'taskOpen', 'leaderboardOpen'])
 </script>
 
 <template>
@@ -20,7 +20,7 @@ defineEmits(['refOpen', 'taskOpen'])
             <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;">
                 <IconMain />
             </div>
-            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('refOpen')">
+            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('leaderboardOpen')">
                 <IconRef />
             </div>
         </nav>
@@ -44,7 +44,7 @@ footer {
 .another {
     display: grid;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
 }
 
 .bar {

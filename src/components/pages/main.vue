@@ -36,7 +36,8 @@ export default {
       totalMembers: '0000', // Инициализация с четырьмя нулями
       position: null,
       referralNumber: null,
-      isAmbassador: false
+      isAmbassador: false,
+      showLeaderboard: false // Добавлено состояние для отображения лидерборда
     }
   },
   async mounted() {
@@ -72,6 +73,11 @@ export default {
     openTask() {
       this.show = 2
       window.Telegram.WebApp.BackButton.show()
+    },
+    openLeaderboard() {
+      if (this.isAmbassador) {
+        this.showLeaderboard = true;
+      }
     }
   }
 }
@@ -97,10 +103,10 @@ export default {
       </div>
     </nav>
   </main>
-  <Footers @refOpen="openRef" @taskOpen="openTask" />
+  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard" />
   <Join v-if="show === 1" />
   <Task v-if="show === 2" />
-  <Leaderboard v-if="isAmbassador" />
+  <Leaderboard v-if="showLeaderboard" />
 </template>
 
 <style scoped>
