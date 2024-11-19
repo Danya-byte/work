@@ -4,6 +4,7 @@ import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Ref from './ref.vue'
 import Task from './task.vue'
+import axios from 'axios';
 
 export default {
   components: {
@@ -16,14 +17,23 @@ export default {
   data() {
     return {
       show: 0,
+      totalMembers: '0000' // Инициализация с четырьмя нулями
     }
   },
-  mounted() {
+  async mounted() {
     window.Telegram.WebApp.MainButton.hide()
     window.Telegram.WebApp.BackButton.onClick(() => {
       this.show = 0
       window.Telegram.WebApp.BackButton.hide()
     })
+
+    // Получение данных с бэкенда
+    try {
+      const response = await axios.get('http://localhost:3000/api/total-members');
+      this.totalMembers = response.data.totalMembers.padStart(4, '0'); // Дополняем нулями до 4 символов
+    } catch (error) {
+      console.error('Error fetching total members:', error);
+    }
   },
   methods: {
     openRef() {
@@ -48,12 +58,12 @@ export default {
       </div>
       <div class="count">
         <div>
-          <p>2</p>
+          <p>{{ totalMembers[0] }}</p>
         </div>
         <div class="nums">
-          <p>8</p>
-          <p>9</p>
-          <p>0</p>
+          <p>{{ totalMembers[1] }}</p>
+          <p>{{ totalMembers[2] }}</p>
+          <p>{{ totalMembers[3] }}</p>
         </div>
       </div>
     </nav>
