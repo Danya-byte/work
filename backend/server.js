@@ -15,7 +15,11 @@ const pool = new Pool({
 });
 
 // Настройка CORS
-app.use(cors());
+const corsOptions = {
+  origin: 'https://work-2-tau.vercel.app',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
