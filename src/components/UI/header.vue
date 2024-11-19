@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   data: {
@@ -7,6 +7,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const f = ref(false)
 
 const fetchClass = () => {
     if(props.data == 0) {
@@ -19,17 +21,30 @@ const fetchClass = () => {
 const headerClass = computed(() => {
     return fetchClass()
 })
+
+const refWindow = () => {
+    if (f.value == false) {
+        f.value = true
+        document.querySelector('.rw').style.display = 'flex'
+    } else {
+        f.value = false
+        document.querySelector('.rw').style.display = 'none'
+    }
+}
 </script>
 
 <template>
     <div :class="`view-info ${headerClass}`">
         <div style="display: flex; align-items: center; justify-content: center;">
             <div>
-                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg">
+                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
             </div>
         </div>
         <div v-bind="connect()">
             <div id="ton-connect"></div>
+        </div>
+        <div class="rw">
+            <p>t.me/GreenwoodsBot..8927</p>
         </div>
     </div>
 </template>
@@ -52,6 +67,37 @@ const headerClass = computed(() => {
 .r {
     background: #181818;
     box-shadow: inset 0 0 20px 0px #000;
+}
+
+.rw {
+    padding: 5px;
+    min-width: 150px;
+    min-height: 50px;
+    z-index: 999;
+    position: absolute;
+    margin-top: 90px;
+    border-radius: 5px;
+    backdrop-filter: contrast(0.3);
+    display: none;
+    align-items: center;
+    animation: open 1s ease forwards;
+}
+
+p {
+    color: #fff;
+    font-weight: 600;
+    font-family: Quicksand;
+    font-size: 13px;
+    text-align: center;
+}
+
+@keyframes open {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 </style>
 
