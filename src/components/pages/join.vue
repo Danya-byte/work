@@ -68,7 +68,7 @@ const headerText = computed(() => {
     </div>
     <div v-if="isJoined">
       <p>You have already joined. Your position is {{ position }}.</p>
-      <button @click="$emit('openRef')">Open Profile</button>
+      <button @click="$emit('openProfile')">Open Profile</button>
     </div>
     <div v-else>
       <p>Please join our community to continue.</p>
