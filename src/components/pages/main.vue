@@ -109,7 +109,7 @@ export default {
       </div>
     </nav>
   </main>
-  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard" @openRef="openHeadref" />
+  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard"/>
   <Join v-if="show === 1" />
   <Task v-if="show === 2" />
   <Leaderboard v-if="showLeaderboard" />
