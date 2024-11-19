@@ -1,3 +1,17 @@
+const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
+               "SBTech_youtube", "Nik7102", "cryptohood_adv",
+               "greenchtg", "Igor6i9", "LaLiPaP26", "eeeeergoo",
+               "inside_cripto_pro", "msm031", "Kvar16", "nastushkaE17",
+               "hc_tlg",
+               "vilyam_tim",
+               "AlexShamps",
+               "Skilful221", "Izzzzznanka", "cooper_ad", "rstmcrew",
+               "tropirich", "MR_FRIKOP", "E_E_E_NEON","makcum52","#",
+               "oleksandr_567", "Homiakk2", "Aleksei_jdi", "pavelinvest",
+              "Natashkacrypto", "sashaarmy20","aB_Var_666_999", "Floopi_STG",
+             "VenusTraidingPro", "Artgog777", "reshe_tov", "ilyu4ik", "jam_qq", "sepata",
+           "fuelghoir" ];
+
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
