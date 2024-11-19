@@ -5,6 +5,7 @@ import axios from 'axios';
 const count = ref(0)
 const tg = window.Telegram.WebApp
 const position = ref(null)
+const referralNumber = ref(null)
 
 tg.MainButton.show();
 tg.MainButton.text = "Subscribe"
@@ -24,8 +25,9 @@ const handleMainButtonClick = async () => {
 
     // Проверка пользователя
     try {
-        const response = await axios.post('http://localhost:3000/api/check-user', { userId: tg.initDataUnsafe.user.id });
+        const response = await axios.post('/api/check-user', { username: tg.initDataUnsafe.user.username, telegram_id: tg.initDataUnsafe.user.id });
         position.value = response.data.position;
+        referralNumber.value = response.data.referral_number;
         if (position.value !== null) {
             showModal();
         }
@@ -45,6 +47,7 @@ const redirectToHome = () => {
 
 const showModal = () => {
     tg.showAlert(`You are at position ${position.value}`);
+    tg.openTelegramLink(`https://t.me/Greenwoods_Community?start=${referralNumber.value}`);
 }
 
 tg.onEvent('mainButtonClicked', handleMainButtonClick);

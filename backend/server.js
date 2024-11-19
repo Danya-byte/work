@@ -34,17 +34,18 @@ app.get('/api/total-members', async (req, res) => {
   }
 });
 
+// Роут для проверки пользователя по username или telegram_id
 app.post('/api/check-user', async (req, res) => {
-  const { userId } = req.body;
+  const { username, telegram_id } = req.body;
 
   try {
-    const query = 'SELECT position FROM participants WHERE telegram_id = $1';
-    const result = await pool.query(query, [userId]);
+    const query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
+    const result = await pool.query(query, [username, telegram_id]);
 
     if (result.rows.length > 0) {
-      res.json({ position: result.rows[0].position });
+      res.json({ position: result.rows[0].position, referral_number: result.rows[0].referral_number });
     } else {
-      res.json({ position: null });
+      res.json({ position: null, referral_number: null });
     }
   } catch (error) {
     console.error('Error checking user:', error);
