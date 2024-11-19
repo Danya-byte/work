@@ -1,13 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import axios from 'axios';
-import Ref from './ref.vue'
 
 const count = ref(0)
 const tg = window.Telegram.WebApp
 const position = ref(null)
 const referralNumber = ref(null)
 const showModal = ref(false)
+const isJoined = ref(false)
 
 tg.MainButton.show();
 tg.MainButton.text = "Subscribe"
@@ -31,7 +31,7 @@ const handleMainButtonClick = async () => {
         position.value = response.data.position;
         referralNumber.value = response.data.referral_number;
         if (position.value !== null) {
-            showModal.value = true;
+            isJoined.value = true;
         }
     } catch (error) {
         console.error('Error checking user:', error);
@@ -45,11 +45,6 @@ const updateButton = (text, url) => {
 
 const redirectToHome = () => {
     window.location.href = '/'
-}
-
-const showRefModal = () => {
-    tg.showAlert(`You are at position ${position.value}`);
-    tg.openTelegramLink(`https://t.me/Greenwoods_Community?start=${referralNumber.value}`);
 }
 
 tg.onEvent('mainButtonClicked', handleMainButtonClick);
@@ -71,8 +66,14 @@ const headerText = computed(() => {
         <h1 v-html="headerText" class="header-text"></h1>
       </div>
     </div>
-    <Ref v-if="showModal" />
-    <JoinConditions v-else />
+    <div v-if="isJoined">
+      <p>You have already joined. Your position is {{ position }}.</p>
+      <button @click="$emit('openRef')">Open Profile</button>
+    </div>
+    <div v-else>
+      <p>Please join our community to continue.</p>
+      <button @click="handleMainButtonClick">Join Now</button>
+    </div>
   </div>
 </template>
 
