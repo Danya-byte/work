@@ -2,9 +2,9 @@
 import Background from '@/components/UI/bg.vue'
 import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
-import Ref from './ref.vue'
+import Leaderboard from './leaderboard.vue'
 import Task from './task.vue'
-import JoinConditions from './JoinConditions.vue'
+import Join from './Join.vue'
 import axios from 'axios';
 
 const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
@@ -26,9 +26,9 @@ export default {
     Background,
     Headers,
     Footers,
-    Ref,
+    Leaderboard,
     Task,
-    JoinConditions
+    Join
   },
   data() {
     return {
@@ -54,15 +54,14 @@ export default {
       console.error('Error fetching total members:', error);
     }
 
-    // Чтение состояния пользователя из файла
+    // Проверка пользователя
     try {
-      const response = await axios.get('http://localhost:3000/userState.json');
-      const userState = response.data;
-      this.position = userState.position;
-      this.referralNumber = userState.referralNumber;
-      this.isAmbassador = userState.isAmbassador;
+      const response = await axios.post('http://localhost:3000/api/check-user', { username: window.Telegram.WebApp.initDataUnsafe.user.username, telegram_id: window.Telegram.WebApp.initDataUnsafe.user.id });
+      this.position = response.data.position;
+      this.referralNumber = response.data.referral_number;
+      this.isAmbassador = AMBASSADORS.includes(window.Telegram.WebApp.initDataUnsafe.user.username);
     } catch (error) {
-      console.error('Error reading user state:', error);
+      console.error('Error checking user:', error);
     }
   },
   methods: {
@@ -99,8 +98,7 @@ export default {
     </nav>
   </main>
   <Footers @refOpen="openRef" @taskOpen="openTask" />
-  <Ref v-if="show === 1 && isAmbassador" />
-  <JoinConditions v-else-if="show === 1 && !isAmbassador" />
+  <Join v-if="show === 1" />
   <Task v-if="show === 2" />
   <Leaderboard v-if="isAmbassador" />
 </template>
