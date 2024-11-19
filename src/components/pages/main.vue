@@ -4,7 +4,8 @@ import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Leaderboard from './leaderboard.vue'
 import Task from './task.vue'
-import Join from './join.vue'
+import Join from './Join.vue'
+import Headref from './headref.vue'
 import axios from 'axios';
 
 const AMBASSADORS = ["kata1ana", "fulminatrex", "notlistinq", "balushka23",
@@ -28,7 +29,8 @@ export default {
     Footers,
     Leaderboard,
     Task,
-    Join
+    Join,
+    Headref
   },
   data() {
     return {
@@ -37,7 +39,8 @@ export default {
       position: null,
       referralNumber: null,
       isAmbassador: false,
-      showLeaderboard: false // Добавлено состояние для отображения лидерборда
+      showLeaderboard: false, // Добавлено состояние для отображения лидерборда
+      showHeadref: false // Добавлено состояние для отображения headref
     }
   },
   async mounted() {
@@ -78,6 +81,9 @@ export default {
       if (this.isAmbassador) {
         this.showLeaderboard = true;
       }
+    },
+    openHeadref() {
+      this.showHeadref = true;
     }
   }
 }
@@ -103,10 +109,11 @@ export default {
       </div>
     </nav>
   </main>
-  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard" />
+  <Footers @refOpen="openRef" @taskOpen="openTask" @leaderboardOpen="openLeaderboard" @openRef="openHeadref" />
   <Join v-if="show === 1" />
   <Task v-if="show === 2" />
   <Leaderboard v-if="showLeaderboard" />
+  <Headref v-if="showHeadref" />
 </template>
 
 <style scoped>

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { tonConnectUI } from '@/api/ton.js'
 
 const props = defineProps({
   data: {
@@ -9,13 +10,11 @@ const props = defineProps({
 })
 
 const f = ref(false)
+const position = ref(null)
+const referralNumber = ref(null)
 
 const fetchClass = () => {
-    if(props.data == 0) {
-        return 'm'
-    } else {
-        return 'r'
-    }
+    return props.data === 0 ? 'm' : 'r'
 }
 
 const headerClass = computed(() => {
@@ -23,13 +22,21 @@ const headerClass = computed(() => {
 })
 
 const refWindow = () => {
-    if (f.value == false) {
-        f.value = true
-        document.querySelector('.rw').style.display = 'flex'
-    } else {
-        f.value = false
-        document.querySelector('.rw').style.display = 'none'
-    }
+    f.value = !f.value
+    document.querySelector('.rw').style.display = f.value ? 'flex' : 'none'
+}
+
+const connect = () => {
+    setTimeout(() => {
+        if (!document.querySelector('tc-root')) {
+            tonConnectUI()
+        }
+    }, 200)
+}
+
+const openProfile = () => {
+    // Логика для открытия профиля
+    console.log('Opening profile...')
 }
 </script>
 
@@ -45,6 +52,8 @@ const refWindow = () => {
         </div>
         <div class="rw">
             <p>t.me/GreenwoodsBot..8927</p>
+            <p v-if="position !== null">Your position: {{ position }}</p>
+            <button @click="openProfile">Open Profile</button>
         </div>
     </div>
 </template>
@@ -91,6 +100,16 @@ p {
     text-align: center;
 }
 
+button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background: #66cdaa;
+    border: none;
+    border-radius: 5px;
+    color: #0e0e0e;
+    cursor: pointer;
+}
+
 @keyframes open {
     from {
         opacity: 0;
@@ -100,19 +119,3 @@ p {
     }
 }
 </style>
-
-<script>
-import { tonConnectUI } from '@/api/ton.js'
-
-export default {
-    methods: {
-        connect() {
-            setTimeout(() => {
-                if (!document.querySelector('tc-root')) {
-                    tonConnectUI()
-                }
-            }, 200)
-        }
-    }
-}
-</script>
