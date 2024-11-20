@@ -1,6 +1,6 @@
 <template>
   <div class="leader-board open">
-  <RouterLink to="/"><button class="back">Х</button></RouterLink>
+  <RouterLink to="/main"><button class="back">Х</button></RouterLink>
     <div style="display: grid; align-items: center; justify-content: center;">
       <img
         width="65px"
