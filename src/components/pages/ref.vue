@@ -95,7 +95,7 @@
 export default {
     methods: {
         close() {
-            document.querySelector('.leader-board').classList.add('close')  
+            document.querySelector('.leader-board').classList.add('close')
             setTimeout(() => {
                 document.querySelector('#app').removeChild(document.querySelector('.leader-board'))
             }, 500)

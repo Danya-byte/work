@@ -3,7 +3,7 @@ import IconMain from '@/components/icons/IconMain.vue'
 import IconRef from '@/components/icons/IconRef.vue'
 import IconTask from '@/components/icons/IconTask.vue'
 
-defineEmits(['refOpen', 'taskOpen', 'leaderboardOpen', 'openProfile'])
+defineEmits(['refOpen', 'taskOpen'])
 </script>
 
 <template>
@@ -17,10 +17,10 @@ defineEmits(['refOpen', 'taskOpen', 'leaderboardOpen', 'openProfile'])
             <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('taskOpen')">
                 <IconTask />
             </div>
-            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('leaderboardOpen')">
+            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;">
                 <IconMain />
             </div>
-            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('openProfile')">
+            <div style="display: grid;align-items: center;justify-content: center;background: #000000;border-radius: 10px;padding: 3px;" @click="$emit('refOpen')">
                 <IconRef />
             </div>
         </nav>

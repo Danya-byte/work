@@ -1,7 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { tonConnectUI } from '@/api/ton.js'
-import Profile from '@/components/Profile.vue'
 
 const props = defineProps({
   data: {
@@ -11,10 +9,13 @@ const props = defineProps({
 })
 
 const f = ref(false)
-const showProfile = ref(false)
 
 const fetchClass = () => {
-    return props.data === 0 ? 'm' : 'r'
+    if(props.data == 0) {
+        return 'm'
+    } else {
+        return 'r'
+    }
 }
 
 const headerClass = computed(() => {
@@ -22,24 +23,13 @@ const headerClass = computed(() => {
 })
 
 const refWindow = () => {
-    f.value = !f.value
-    document.querySelector('.rw').style.display = f.value ? 'flex' : 'none'
-}
-
-const connect = () => {
-    setTimeout(() => {
-        if (!document.querySelector('tc-root')) {
-            tonConnectUI()
-        }
-    }, 200)
-}
-
-const openProfile = () => {
-    showProfile.value = true
-}
-
-const closeProfile = () => {
-    showProfile.value = false
+    if (f.value == false) {
+        f.value = true
+        document.querySelector('.rw').style.display = 'flex'
+    } else {
+        f.value = false
+        document.querySelector('.rw').style.display = 'none'
+    }
 }
 </script>
 
@@ -47,7 +37,7 @@ const closeProfile = () => {
     <div :class="`view-info ${headerClass}`">
         <div style="display: flex; align-items: center; justify-content: center;">
             <div>
-                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="openProfile"/>
+                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
             </div>
         </div>
         <div v-bind="connect()">
@@ -55,10 +45,8 @@ const closeProfile = () => {
         </div>
         <div class="rw">
             <p>t.me/GreenwoodsBot..8927</p>
-            <p v-if="props.data !== null">Your position: {{ props.data }}</p>
         </div>
     </div>
-    <Profile v-if="showProfile" :position="props.data" @close="closeProfile" />
 </template>
 
 <style scoped>
@@ -112,3 +100,19 @@ p {
     }
 }
 </style>
+
+<script>
+import { tonConnectUI } from '@/api/ton.js'
+
+export default {
+    methods: {
+        connect() {
+            setTimeout(() => {
+                if (!document.querySelector('tc-root')) {
+                    tonConnectUI()
+                }
+            }, 200)
+        }
+    }
+}
+</script>

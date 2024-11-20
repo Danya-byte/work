@@ -1,18 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
-import axios from 'axios';
 
 const count = ref(0)
 const tg = window.Telegram.WebApp
-const position = ref(null)
-const referralNumber = ref(null)
-const showModal = ref(false)
-const isJoined = ref(false)
 
 tg.MainButton.show();
 tg.MainButton.text = "Subscribe"
 
-const handleMainButtonClick = async () => {
+const handleMainButtonClick = () => {
     count.value++;
     switch (count.value) {
         case 1:
@@ -23,18 +18,6 @@ const handleMainButtonClick = async () => {
             break
         default:
             redirectToHome()
-    }
-
-    // Проверка пользователя
-    try {
-        const response = await axios.post('/api/check-user', { username: tg.initDataUnsafe.user.username, telegram_id: tg.initDataUnsafe.user.id });
-        position.value = response.data.position;
-        referralNumber.value = response.data.referral_number;
-        if (position.value !== null) {
-            isJoined.value = true;
-        }
-    } catch (error) {
-        console.error('Error checking user:', error);
     }
 }
 
@@ -65,14 +48,6 @@ const headerText = computed(() => {
       <div class="leader-title">
         <h1 v-html="headerText" class="header-text"></h1>
       </div>
-    </div>
-    <div v-if="isJoined">
-      <p>You have already joined. Your position is {{ position }}.</p>
-      <button @click="$emit('openProfile')">Open Profile</button>
-    </div>
-    <div v-else>
-      <p>Please join our community to continue.</p>
-      <button @click="handleMainButtonClick">Join Now</button>
     </div>
   </div>
 </template>

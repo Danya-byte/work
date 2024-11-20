@@ -1,5 +1,5 @@
 <script setup>
-import join from '@/components/pages/Join.vue'
+import join from '@/components/pages/join.vue'
 </script>
 
 <template>
