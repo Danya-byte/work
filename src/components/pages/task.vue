@@ -1,5 +1,10 @@
 <template>
     <div class="task-board open">
+        <!-- Добавляем кнопку "Закрыть" в левом верхнем углу -->
+        <div class="close-button" @click="close">
+            <img src="../../assets/close-icon.png" alt="Close" width="24" height="24" />
+        </div>
+
         <div style="display: grid; align-items: center; justify-content: center;">
             <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
         </div>
@@ -13,46 +18,46 @@
                         <img width="60px" height="60px" src="../../assets/ECI.png" />
                         <h3>ECI</h3>
                     </div>
-                <div>
-                    <p>Earn ECI for <br> complete the tasks</p>
+                    <div>
+                        <p>Earn ECI for <br> complete the tasks</p>
+                    </div>
                 </div>
-            </div>
-            <div class="ewi">
-                <div>
-                    <img width="60px" height="60px" src="../../assets/EWI.png" />
-                    <h3>EWI</h3>
-                </div>
-                <div>
-                    <p>Earn EWI for <br> complete the tasks</p>
-                </div>
-            </div>
-            <div class="ewe">
-                <div>
-                    <img width="60px" height="60px" src="../../assets/EWE.png" />
-                    <h3>EWE</h3>
-                </div>
-                <div>
-                    <p>Earn EWE for <br> complete the tasks</p>
-                </div>
-            </div>
-        </div>
-        <ul class="refs">
-            <li v-for="(item) in data" :key="item.id">
-                <div class="about">
-                    <div style="display: flex; align-items: center; justify-content: center;">
-                        <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
-                        <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                <div class="ewi">
+                    <div>
+                        <img width="60px" height="60px" src="../../assets/EWI.png" />
+                        <h3>EWI</h3>
                     </div>
                     <div>
-                        <h3 style="font-family: Quicksand; color: #fff;">{{ item.type }}</h3>
-                        <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+                        <p>Earn EWI for <br> complete the tasks</p>
                     </div>
                 </div>
-                <div style="display: grid; align-items: center;">
-                    <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
+                <div class="ewe">
+                    <div>
+                        <img width="60px" height="60px" src="../../assets/EWE.png" />
+                        <h3>EWE</h3>
+                    </div>
+                    <div>
+                        <p>Earn EWE for <br> complete the tasks</p>
+                    </div>
                 </div>
-            </li>
-        </ul>
+            </div>
+            <ul class="refs">
+                <li v-for="(item) in data" :key="item.id">
+                    <div class="about">
+                        <div style="display: flex; align-items: center; justify-content: center;">
+                            <img v-if="item.type == 'Channel'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                            <img v-if="item.type == 'Transaction'" style="border-radius: 50px;" width="40px" height="40px" src="../../assets/telegramlogo.jpeg" @click="close" />
+                        </div>
+                        <div>
+                            <h3 style="font-family: Quicksand; color: #fff;">{{ item.type }}</h3>
+                            <p style="padding: 0; font-size: 14px; color: #aaaaaa; background: 0;">{{ item.reward }}</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; align-items: center;">
+                        <h1 style="font-family: Quicksand; font-size: 18px; font-weight: 600; color: #3390ec;">Start</h1>
+                    </div>
+                </li>
+            </ul>
         </section>
     </div>
 </template>
@@ -79,13 +84,13 @@
 }
 
 @keyframes open {
-0% {
-    transform: translateY(100%);
-}
-100% {
-    transform: translateY(0);
-    bottom: 0;
-}
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(0);
+        bottom: 0;
+    }
 }
 
 @keyframes close {
@@ -204,6 +209,14 @@
     font-family: 'Quicksand';
     font-weight: 600;
 }
+
+/* Стили для кнопки "Закрыть" */
+.close-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+}
 </style>
 
 <script>
@@ -226,9 +239,9 @@ export default {
     },
     methods: {
         close() {
-            document.querySelector('.leader-board').classList.add('close')  
+            document.querySelector('.task-board').classList.add('close')
             setTimeout(() => {
-                document.querySelector('#app').removeChild(document.querySelector('.leader-board'))
+                document.querySelector('#app').removeChild(document.querySelector('.task-board'))
             }, 500)
         }
     }
