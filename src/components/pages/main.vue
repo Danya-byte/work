@@ -2,7 +2,6 @@
 import Background from '@/components/UI/bg.vue'
 import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
-import Ref from './ref.vue'
 import Task from './task.vue'
 import Join from './Join.vue'
 import Leaderboard from './leaderboard.vue'
@@ -27,7 +26,6 @@ export default {
     Background,
     Headers,
     Footers,
-    Ref,
     Task,
     Join,
     Leaderboard
@@ -64,18 +62,30 @@ export default {
       this.position = response.data.position;
       this.referralNumber = response.data.referral_number;
       this.isAmbassador = AMBASSADORS.includes(window.Telegram.WebApp.initDataUnsafe.user.username);
+
+      // Сохранение состояния пользователя в localStorage
+      localStorage.setItem('userState', JSON.stringify({
+        position: this.position,
+        referralNumber: this.referralNumber,
+        isAmbassador: this.isAmbassador
+      }));
     } catch (error) {
       console.error('Error checking user:', error);
     }
   },
   methods: {
     openRef() {
-      this.show = 1
-      window.Telegram.WebApp.BackButton.show()
+      const userState = JSON.parse(localStorage.getItem('userState'));
+      if (userState && userState.position !== null) {
+        this.showProfile = true;
+      } else {
+        this.show = 1;
+        window.Telegram.WebApp.BackButton.show();
+      }
     },
     openTask() {
-      this.show = 2
-      window.Telegram.WebApp.BackButton.show()
+      this.show = 2;
+      window.Telegram.WebApp.BackButton.show();
     },
     openLeaderboard() {
       if (this.isAmbassador) {
@@ -113,7 +123,7 @@ export default {
   <Join v-if="show === 1" />
   <Task v-if="show === 2" />
   <Leaderboard v-if="showLeaderboard" />
-  <Headers v-if="showProfile" :data="position" />
+  <Profile v-if="showProfile" :position="position" @close="showProfile = false" />
 </template>
 
 <style scoped>

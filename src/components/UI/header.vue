@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { tonConnectUI } from '@/api/ton.js'
+import Profile from '@/components/Profile.vue'
 
 const props = defineProps({
   data: {
@@ -10,6 +11,7 @@ const props = defineProps({
 })
 
 const f = ref(false)
+const showProfile = ref(false)
 
 const fetchClass = () => {
     return props.data === 0 ? 'm' : 'r'
@@ -31,13 +33,21 @@ const connect = () => {
         }
     }, 200)
 }
+
+const openProfile = () => {
+    showProfile.value = true
+}
+
+const closeProfile = () => {
+    showProfile.value = false
+}
 </script>
 
 <template>
     <div :class="`view-info ${headerClass}`">
         <div style="display: flex; align-items: center; justify-content: center;">
             <div>
-                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
+                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="openProfile"/>
             </div>
         </div>
         <div v-bind="connect()">
@@ -48,6 +58,7 @@ const connect = () => {
             <p v-if="props.data !== null">Your position: {{ props.data }}</p>
         </div>
     </div>
+    <Profile v-if="showProfile" :position="props.data" @close="closeProfile" />
 </template>
 
 <style scoped>
