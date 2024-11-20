@@ -4,8 +4,8 @@ import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Ref from './ref.vue'
 import Task from './task.vue'
-import User from './user.vue' // Импортируем компонент user.vue
-import Join from './join.vue' // Импортируем компонент join.vue
+import User from './user.vue'
+import Join from './join.vue'
 import axios from 'axios'
 
 export default {
@@ -21,11 +21,11 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: '0000', // По умолчанию отображаем 0000
-      isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
-      showModal: false, // Флаг для отображения модального окна
-      userInfo: null, // Информация о пользователе
-      showJoinModal: false, // Флаг для отображения окна с условиями подписки
+      totalMembers: '0000',
+      isAmbassador: false,
+      showModal: false,
+      userInfo: null,
+      showJoinModal: false,
     }
   },
   async mounted() {
@@ -35,15 +35,13 @@ export default {
       window.Telegram.WebApp.BackButton.hide()
     })
 
-    // Получение данных с бэкенда
     try {
       const response = await axios.get('http://localhost:3000/api/total-members')
-      this.totalMembers = response.data.totalMembers.padStart(4, '0') // Дополняем нулями до 4 символов
+      this.totalMembers = response.data.totalMembers.padStart(4, '0')
     } catch (error) {
       console.error('Error fetching total members:', error)
     }
 
-    // Проверка, является ли пользователь амбассадором
     const username = window.Telegram.WebApp.initDataUnsafe.user.username
     try {
       const response = await axios.post('http://localhost:3000/api/check-ambassador', { username })
@@ -83,12 +81,14 @@ export default {
       }
     },
     openUserProfile() {
-      this.show = 3 // Переключаем на окно user.vue
+      this.show = 3
     },
     async joinEarly() {
       await this.checkUserInDatabase()
-      if (!this.showJoinModal) {
-        this.show = 4 // Переключаем на окно join.vue
+      if (this.showJoinModal) {
+        this.showJoinModal = true
+      } else {
+        this.show = 4
       }
     }
   }
@@ -118,8 +118,8 @@ export default {
   <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
   <Task v-if="show === 2" />
-  <User v-if="show === 3" /> <!-- Отображаем компонент user.vue -->
-  <Join v-if="show === 4" /> <!-- Отображаем компонент join.vue -->
+  <User v-if="show === 3" />
+  <Join v-if="show === 4" />
   <div v-if="showModal" class="modal">
     <div class="modal-content">
       <p>You are not an ambassador.</p>
