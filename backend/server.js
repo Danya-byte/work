@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Список амбассадоров
-const AMBASSADORS = ["#"];
+const AMBASSADORS = ["backend_creator"];
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {

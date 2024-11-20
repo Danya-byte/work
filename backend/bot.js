@@ -3,7 +3,7 @@ const path = require('path');
 const TelegramBot = require('node-telegram-bot-api');
 const { Pool } = require('pg');
 
-const AMBASSADORS = ["#"];
+const AMBASSADORS = ["backend_creator"];
 
 const token = '8102571059:AAHLHrmuq3Dmu7rtEIKNn0PNPu07UeYnCTU';
 const bot = new TelegramBot(token, { polling: true });
