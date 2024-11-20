@@ -7,33 +7,23 @@ const port = process.env.PORT || 3000;
 
 // Настройки подключения к базе данных
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // Удалите или закомментируйте следующую строку, если сервер базы данных не поддерживает SSL
-  // ssl: {
-  //   rejectUnauthorized: false
-  // }
-});
-
-// Проверка подключения к базе данных
-pool.connect((err, client, done) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
-    console.log('Connected to the database');
-    done();
-  }
+  user: 'postgres',
+  host: '127.0.0.1',
+  database: 'greenwoods',
+  password: 'Dkflbvbhjdbx76',
+  port: 5432,
 });
 
 // Настройка CORS
 const corsOptions = {
-  origin: 'https://your-vercel-app.vercel.app',
+  origin: 'https://work-2-tau.vercel.app',
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
 // Список амбассадоров
-const AMBASSADORS = ["backend_creator"];
+const AMBASSADORS = ["#"];
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
@@ -54,14 +44,11 @@ app.post('/api/check-user', async (req, res) => {
 
   try {
     const query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
-    console.log('Executing query:', query, 'with params:', [username, telegram_id]);
     const result = await pool.query(query, [username, telegram_id]);
 
     if (result.rows.length > 0) {
-      console.log('User found:', result.rows[0]);
       res.json({ position: result.rows[0].position, referral_number: result.rows[0].referral_number });
     } else {
-      console.log('User not found');
       res.json({ position: null, referral_number: null });
     }
   } catch (error) {
