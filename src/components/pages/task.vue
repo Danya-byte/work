@@ -1,6 +1,6 @@
 <template>
     <div class="task-board open">
-    <RouterLink to="/main"><button class="back">Х</button></RouterLink>
+    <RouterLink to="/"><button class="back">Х</button></RouterLink>
         <div style="display: grid; align-items: center; justify-content: center;">
             <img width="65px" height="65px" src="https://em-content.zobj.net/source/telegram/386/sparkles_2728.webp" />
         </div>
