@@ -19,9 +19,7 @@ export default {
       show: 0,
       totalMembers: '0000', // По умолчанию отображаем 0000
       isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
-      showModal: false, // Флаг для отображения модального окна
-      userInfo: null, // Информация о пользователе
-      showJoinModal: false, // Флаг для отображения окна с условиями подписки
+      showModal: false // Флаг для отображения модального окна
     }
   },
   async mounted() {
@@ -33,7 +31,7 @@ export default {
 
     // Получение данных с бэкенда
     try {
-      const response = await axios.get('http://178.66.128.193:3000/api/total-members')
+      const response = await axios.get('http://localhost:3000/api/total-members')
       this.totalMembers = response.data.totalMembers.padStart(4, '0') // Дополняем нулями до 4 символов
     } catch (error) {
       console.error('Error fetching total members:', error)
@@ -42,7 +40,7 @@ export default {
     // Проверка, является ли пользователь амбассадором
     const username = window.Telegram.WebApp.initDataUnsafe.user.username
     try {
-      const response = await axios.post('http://178.66.128.193:3000/api/check-ambassador', { username })
+      const response = await axios.post('http://localhost:3000/api/check-ambassador', { username })
       this.isAmbassador = response.data.isAmbassador
     } catch (error) {
       console.error('Error checking ambassador status:', error)
@@ -63,41 +61,6 @@ export default {
     },
     closeModal() {
       this.showModal = false
-    },
-    async checkUserInDatabase() {
-      const telegramId = window.Telegram.WebApp.initDataUnsafe.user.id
-      try {
-        const response = await axios.post('http://178.66.128.193:3000/api/check-user', { telegram_id: telegramId })
-        if (response.data.position) {
-          this.userInfo = response.data
-          this.showModal = true
-        } else {
-          this.showJoinModal = true
-        }
-      } catch (error) {
-        console.error('Error checking user in database:', error)
-      }
-    },
-    async checkSubscription(channelId) {
-      const userId = window.Telegram.WebApp.initDataUnsafe.user.id
-      try {
-        const response = await axios.post('http://178.66.128.193:3000/api/check-subscription', { userId, channelId })
-        return response.data.isSubscribed
-      } catch (error) {
-        console.error('Error checking subscription:', error)
-        return false
-      }
-    },
-    async joinEarly() {
-      await this.checkUserInDatabase()
-      if (this.showJoinModal) {
-        const isSubscribed = await this.checkSubscription('Greenwoods_Community')
-        if (!isSubscribed) {
-          alert('Please subscribe to the channel to continue.')
-        } else {
-          // Переход к следующему шагу
-        }
-      }
     }
   }
 }
@@ -128,14 +91,8 @@ export default {
   <Task v-if="show === 2" />
   <div v-if="showModal" class="modal">
     <div class="modal-content">
-      <p>You are already in the database. Your position: {{ userInfo.position }}.</p>
+      <p>You are not an ambassador.</p>
       <button @click="closeModal">Close</button>
-    </div>
-  </div>
-  <div v-if="showJoinModal" class="join-modal">
-    <div class="join-modal-content">
-      <p>Please subscribe to the channel to continue.</p>
-      <button @click="joinEarly">Join</button>
     </div>
   </div>
 </template>
@@ -217,39 +174,6 @@ p {
 }
 
 .modal-content button {
-  padding: 10px 20px;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.join-modal {
-  position: fixed;
-  z-index: 999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.join-modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.join-modal-content p {
-  margin-bottom: 20px;
-}
-
-.join-modal-content button {
   padding: 10px 20px;
   border: none;
   background: #007bff;
