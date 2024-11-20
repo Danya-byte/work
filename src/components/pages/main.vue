@@ -4,6 +4,8 @@ import Headers from '@/components/UI/header.vue'
 import Footers from '@/components/UI/footer.vue'
 import Ref from './ref.vue'
 import Task from './task.vue'
+import User from './user.vue' // Импортируем компонент user.vue
+import Join from './join.vue' // Импортируем компонент join.vue
 import axios from 'axios'
 
 export default {
@@ -12,14 +14,18 @@ export default {
     Headers,
     Footers,
     Ref,
-    Task
+    Task,
+    User,
+    Join
   },
   data() {
     return {
       show: 0,
       totalMembers: '0000', // По умолчанию отображаем 0000
       isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
-      showModal: false // Флаг для отображения модального окна
+      showModal: false, // Флаг для отображения модального окна
+      userInfo: null, // Информация о пользователе
+      showJoinModal: false, // Флаг для отображения окна с условиями подписки
     }
   },
   async mounted() {
@@ -61,6 +67,29 @@ export default {
     },
     closeModal() {
       this.showModal = false
+    },
+    async checkUserInDatabase() {
+      const telegramId = window.Telegram.WebApp.initDataUnsafe.user.id
+      try {
+        const response = await axios.post('http://localhost:3000/api/check-user', { telegram_id: telegramId })
+        if (response.data.position) {
+          this.userInfo = response.data
+          this.showJoinModal = true
+        } else {
+          this.showJoinModal = false
+        }
+      } catch (error) {
+        console.error('Error checking user in database:', error)
+      }
+    },
+    openUserProfile() {
+      this.show = 3 // Переключаем на окно user.vue
+    },
+    async joinEarly() {
+      await this.checkUserInDatabase()
+      if (!this.showJoinModal) {
+        this.show = 4 // Переключаем на окно join.vue
+      }
     }
   }
 }
@@ -89,10 +118,20 @@ export default {
   <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
   <Task v-if="show === 2" />
+  <User v-if="show === 3" /> <!-- Отображаем компонент user.vue -->
+  <Join v-if="show === 4" /> <!-- Отображаем компонент join.vue -->
   <div v-if="showModal" class="modal">
     <div class="modal-content">
       <p>You are not an ambassador.</p>
       <button @click="closeModal">Close</button>
+    </div>
+  </div>
+  <div v-if="showJoinModal" class="join-modal">
+    <div class="join-modal-content">
+      <p v-if="userInfo">You are already in the database. Your position: {{ userInfo.position }}.</p>
+      <p v-else>You are not in the database.</p>
+      <button v-if="userInfo" @click="openUserProfile">Profile</button>
+      <button v-else @click="joinEarly">Join</button>
     </div>
   </div>
 </template>
@@ -174,6 +213,39 @@ p {
 }
 
 .modal-content button {
+  padding: 10px 20px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.join-modal {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.join-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.join-modal-content p {
+  margin-bottom: 20px;
+}
+
+.join-modal-content button {
   padding: 10px 20px;
   border: none;
   background: #007bff;
