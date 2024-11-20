@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import User from '../pages/user.vue'
 
 const props = defineProps({
   data: {
@@ -25,28 +26,28 @@ const headerClass = computed(() => {
 const refWindow = () => {
     if (f.value == false) {
         f.value = true
-        document.querySelector('.rw').style.display = 'flex'
     } else {
         f.value = false
-        document.querySelector('.rw').style.display = 'none'
     }
 }
 </script>
 
 <template>
-    <div :class="`view-info ${headerClass}`">
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <div>
-                <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
+    <template v-if="!f">
+        <div :class="`view-info ${headerClass}`">
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <div>
+                    <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
+                </div>
+            </div>
+            <div v-bind="connect()">
+                <div id="ton-connect"></div>
             </div>
         </div>
-        <div v-bind="connect()">
-            <div id="ton-connect"></div>
-        </div>
-        <div class="rw">
-            <p>t.me/GreenwoodsBot..8927</p>
-        </div>
-    </div>
+    </template>
+    <template v-else>
+        <User />
+    </template>
 </template>
 
 <style scoped>
