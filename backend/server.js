@@ -22,6 +22,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Список амбассадоров
+const AMBASSADORS = ["backend_creator"];
+
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
   try {
@@ -51,6 +54,17 @@ app.post('/api/check-user', async (req, res) => {
   } catch (error) {
     console.error('Error checking user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Роут для проверки, является ли пользователь амбассадором
+app.post('/api/check-ambassador', (req, res) => {
+  const { username } = req.body;
+
+  if (AMBASSADORS.includes(username)) {
+    res.json({ isAmbassador: true });
+  } else {
+    res.json({ isAmbassador: false });
   }
 });
 

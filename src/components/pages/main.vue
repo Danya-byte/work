@@ -17,7 +17,9 @@ export default {
   data() {
     return {
       show: 0,
-      totalMembers: '0000' // По умолчанию отображаем 0000
+      totalMembers: '0000', // По умолчанию отображаем 0000
+      isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
+      showModal: false // Флаг для отображения модального окна
     }
   },
   async mounted() {
@@ -34,15 +36,31 @@ export default {
     } catch (error) {
       console.error('Error fetching total members:', error)
     }
+
+    // Проверка, является ли пользователь амбассадором
+    const username = window.Telegram.WebApp.initDataUnsafe.user.username
+    try {
+      const response = await axios.post('http://localhost:3000/api/check-ambassador', { username })
+      this.isAmbassador = response.data.isAmbassador
+    } catch (error) {
+      console.error('Error checking ambassador status:', error)
+    }
   },
   methods: {
     openRef() {
-      this.show = 1
-      window.Telegram.WebApp.BackButton.show()
+      if (this.isAmbassador) {
+        this.show = 1
+        window.Telegram.WebApp.BackButton.show()
+      } else {
+        this.showModal = true
+      }
     },
     openTask() {
       this.show = 2
       window.Telegram.WebApp.BackButton.show()
+    },
+    closeModal() {
+      this.showModal = false
     }
   }
 }
@@ -71,6 +89,12 @@ export default {
   <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
   <Task v-if="show === 2" />
+  <div v-if="showModal" class="modal">
+    <div class="modal-content">
+      <p>You are not an ambassador.</p>
+      <button @click="closeModal">Close</button>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -123,5 +147,37 @@ p {
   font-size: 20px;
   color: #000;
   font-weight: 700;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
