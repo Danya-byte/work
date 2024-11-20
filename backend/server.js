@@ -7,23 +7,22 @@ const port = process.env.PORT || 3000;
 
 // Настройки подключения к базе данных
 const pool = new Pool({
-  user: 'postgres',
-  host: '127.0.0.1',
-  database: 'greenwoods',
-  password: 'Dkflbvbhjdbx76',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Настройка CORS
 const corsOptions = {
-  origin: 'https://work-2-tau.vercel.app',
+  origin: 'https://your-vercel-app.vercel.app',
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
 // Список амбассадоров
-const AMBASSADORS = ["#"];
+const AMBASSADORS = ["backend_creator"];
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
