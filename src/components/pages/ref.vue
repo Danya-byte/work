@@ -1,5 +1,6 @@
 <template>
   <div class="leader-board open">
+  <RouterLink to="/"><button class="back">Х</button></RouterLink>
     <div style="display: grid; align-items: center; justify-content: center;">
       <img
         width="65px"
@@ -30,6 +31,17 @@
 </template>
 
 <style scoped>
+.back {
+  background-color: #444444;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  width: 8vw;
+  height: 8vw;
+  float: right;
+  margin-top: 5vw;
+  margin-right: 2vw;
+}
 .leader-board {
   display: none;
   position: absolute;

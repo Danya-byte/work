@@ -1,5 +1,6 @@
 <template>
     <div class="user">
+    <RouterLink to="/"><button class="back">Х</button></RouterLink>
         <div style="text-align: center;">
             <img src="https://em-content.zobj.net/source/telegram/386/people-hugging_1fac2.webp" width="150vw">
         </div>
@@ -12,6 +13,17 @@
 </template>
 
 <style scoped>
+.back {
+  background-color: #444444;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  width: 8vw;
+  height: 8vw;
+  float: right;
+  margin-top: 5vw;
+  margin-right: 2vw;
+}
 .refbtn {
     position: absolute;
     bottom: 0;
