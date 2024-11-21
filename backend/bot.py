@@ -101,12 +101,12 @@ async def check_username(message: types.Message):
         logging.info(f"User state saved for user {username} with ID {message.from_user.id}")
 
         if position is not None:
-            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app/'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer(f'Welcome back! You are at position {position}.', reply_markup=keyboard)
             logging.info(f"Welcome message sent to user {username} with ID {message.from_user.id}")
         else:
-            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app/'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer('Welcome! Please complete the following steps to join:', reply_markup=keyboard)
             logging.info(f"Join message sent to user {username} with ID {message.from_user.id}")
