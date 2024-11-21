@@ -22,10 +22,63 @@ bot.onText(/\/start/, async (msg) => {
   const username = msg.from.username;
   const telegram_id = msg.from.id;
 
+  if (!username) {
+    bot.sendMessage(chatId, 'Please set a username in your Telegram profile to continue.');
+    return;
+  }
+
   try {
     // Проверка наличия пользователя в базе данных
     const checkUserQuery = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
     const checkUserResult = await pool.query(checkUserQuery, [username, telegram_id]);
+    const { position, referral_number } = checkUserResult.rows[0] || { position: null, referral_number: null };
+
+    // Сохранение состояния пользователя в файл
+    const userState = {
+      username,
+      position: position !== null,
+      referralNumber: referral_number,
+      isAmbassador: AMBASSADORS.includes(username)
+    };
+    fs.writeFileSync(path.join(__dirname, 'userState.json'), JSON.stringify(userState));
+
+    if (position !== null) {
+      bot.sendMessage(chatId, `Welcome back! You are at position ${position}.`, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Join', web_app: { url: 'https://work-2-tau.vercel.app' } }]
+          ]
+        }
+      });
+    } else {
+      bot.sendMessage(chatId, 'Welcome! Please complete the following steps to join:', {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Join', web_app: { url: 'https://work-2-tau.vercel.app' } }]
+          ]
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error checking user:', error);
+    bot.sendMessage(chatId, 'An error occurred. Please try again later.');
+  }
+});
+
+// Проверка установки username
+bot.on('message', async (msg) => {
+  const chatId = msg.chat.id;
+  const username = msg.from.username;
+
+  if (!username) {
+    bot.sendMessage(chatId, 'Please set a username in your Telegram profile to continue.');
+    return;
+  }
+
+  try {
+    // Проверка наличия пользователя в базе данных
+    const checkUserQuery = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
+    const checkUserResult = await pool.query(checkUserQuery, [username, msg.from.id]);
     const { position, referral_number } = checkUserResult.rows[0] || { position: null, referral_number: null };
 
     // Сохранение состояния пользователя в файл
