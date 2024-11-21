@@ -106,7 +106,7 @@ export default {
   <Join v-if="show === 4" /> <!-- Отображаем компонент join.vue -->
   <div v-if="showModal" class="modal">
     <div class="modal-content">
-      <p>You are not an ambassador.</p>
+      <p>Very soon</p>
       <button @click="closeModal">Close</button>
     </div>
   </div>
@@ -197,3 +197,6 @@ p {
   cursor: pointer;
 }
 </style>
+
+
+
