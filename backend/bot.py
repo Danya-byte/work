@@ -4,19 +4,10 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from asyncpg import Pool, create_pool
+from supabase_config import supabase  # Импортируем подключение к Supabase
 
 # Настройки логирования
 logging.basicConfig(level=logging.INFO)
-
-# Настройки подключения к базе данных
-DB_CONFIG = {
-    'user': 'postgres',
-    'host': '127.0.0.1',
-    'database': 'greenwoods',
-    'password': 'Dkflbvbhjdbx76',
-    'port': 5432,
-}
 
 # Список амбассадоров
 AMBASSADORS = ["backend_creator"]
@@ -25,13 +16,6 @@ AMBASSADORS = ["backend_creator"]
 TOKEN = '8102571059:AAHLHrmuq3Dmu7rtEIKNn0PNPu07UeYnCTU'
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
-# Создание пула подключений к базе данных
-pool: Pool = None
-
-async def create_db_pool():
-    global pool
-    pool = await create_pool(**DB_CONFIG)
 
 @dp.message(Command("start"), lambda message: message.chat.id == message.from_user.id)
 async def start_command(message: types.Message):
@@ -47,12 +31,11 @@ async def start_command(message: types.Message):
         return
 
     try:
-        async with pool.acquire() as connection:
-            check_user_query = ('SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id '
-                                '= $2')
-            check_user_result = await connection.fetchrow(check_user_query, username, telegram_id)
-            position = check_user_result['position'] if check_user_result else None
-            referral_number = check_user_result['referral_number'] if check_user_result else None
+        # Проверка пользователя в базе данных Supabase
+        check_user_query = supabase.from_('participants').select('position, referral_number').or_(f'username.eq.{username},telegram_id.eq.{telegram_id}')
+        check_user_result = check_user_query.execute().data
+        position = check_user_result[0]['position'] if check_user_result else None
+        referral_number = check_user_result[0]['referral_number'] if check_user_result else None
 
         logging.info(f"User {username} with ID {telegram_id} checked in the database. Position: {position}, Referral Number: {referral_number}")
 
@@ -97,11 +80,11 @@ async def check_username(message: types.Message):
         return
 
     try:
-        async with pool.acquire() as connection:
-            check_user_query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2'
-            check_user_result = await connection.fetchrow(check_user_query, username, message.from_user.id)
-            position = check_user_result['position'] if check_user_result else None
-            referral_number = check_user_result['referral_number'] if check_user_result else None
+        # Проверка пользователя в базе данных Supabase
+        check_user_query = supabase.from_('participants').select('position, referral_number').or_(f'username.eq.{username},telegram_id.eq.{message.from_user.id}')
+        check_user_result = check_user_query.execute().data
+        position = check_user_result[0]['position'] if check_user_result else None
+        referral_number = check_user_result[0]['referral_number'] if check_user_result else None
 
         logging.info(f"User {username} with ID {message.from_user.id} checked in the database. Position: {position}, Referral Number: {referral_number}")
 
@@ -134,7 +117,6 @@ async def check_username(message: types.Message):
         logging.info(f"Error occurred while checking user {username} with ID {message.from_user.id}")
 
 async def main():
-    await create_db_pool()
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
