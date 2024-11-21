@@ -119,7 +119,48 @@ app.post('/api/save-user-state', (req, res) => {
   }
 });
 
-// Запуск сервера
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Роут для сохранения действия пользователя в файл
+app.post('/api/save-action', (req, res) => {
+  const action = req.body;
+  const filePath = path.join(__dirname, 'userActions.json'); // Укажите новое название файла для действий
+
+  // Проверяем, существует ли файл
+  if (fs.existsSync(filePath)) {
+    // Если файл существует, читаем его содержимое
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      let actions = [];
+      try {
+        actions = JSON.parse(data);
+      } catch (parseError) {
+        console.error('Error parsing JSON:', parseError);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Добавляем новое действие
+      actions.push(action);
+
+      // Записываем обновленный массив обратно в файл
+      fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
+        if (writeErr) {
+          console.error('Error writing file:', writeErr);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.json({ message: 'Action saved successfully' });
+      });
+    });
+  } else {
+    // Если файл не существует, создаем новый файл с первым действием
+    const actions = [action];
+    fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
+      if (writeErr) {
+        console.error('Error writing file:', writeErr);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      res.json({ message: 'Action saved successfully' });

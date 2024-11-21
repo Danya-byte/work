@@ -48,6 +48,9 @@ export default {
     } catch (error) {
       console.error('Error fetching total members:', error)
     }
+
+    // Загрузка состояния пользователя из localStorage
+    this.loadUserStateFromLocalStorage()
   },
   methods: {
     async fetchUserData() {
@@ -57,6 +60,7 @@ export default {
           const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
           this.userState = response.data
           this.saveUserStateToLocalStorage(this.userState)
+          this.saveUserStateToServer(this.userState)
         } catch (error) {
           console.error('Error fetching user data:', error)
         }
@@ -78,6 +82,7 @@ export default {
             this.showModal = true
           }
           this.saveActionToLocalStorage('openRef')
+          this.saveActionToServer('openRef')
         } catch (error) {
           console.error('Error checking ambassador status:', error)
         }
@@ -91,16 +96,19 @@ export default {
       this.show = 2
       window.Telegram.WebApp.BackButton.show()
       this.saveActionToLocalStorage('openTask')
+      this.saveActionToServer('openTask')
     },
     async openUserProfile() {
       await this.fetchUserData()
       this.show = 3
       this.saveActionToLocalStorage('openUserProfile')
+      this.saveActionToServer('openUserProfile')
     },
     async joinEarly() {
       await this.fetchUserData()
       this.show = 4
       this.saveActionToLocalStorage('joinEarly')
+      this.saveActionToServer('joinEarly')
     },
     closeModal() {
       this.showModal = false
@@ -108,10 +116,30 @@ export default {
     saveUserStateToLocalStorage(userState) {
       localStorage.setItem('userState', JSON.stringify(userState))
     },
+    loadUserStateFromLocalStorage() {
+      const userState = localStorage.getItem('userState')
+      if (userState) {
+        this.userState = JSON.parse(userState)
+      }
+    },
     saveActionToLocalStorage(action) {
       const actions = JSON.parse(localStorage.getItem('userActions') || '[]')
       actions.push({ action, timestamp: new Date().toISOString() })
       localStorage.setItem('userActions', JSON.stringify(actions))
+    },
+    async saveUserStateToServer(userState) {
+      try {
+        await axios.post('http://localhost:3000/api/save-user-state', userState)
+      } catch (error) {
+        console.error('Error saving user state to server:', error)
+      }
+    },
+    async saveActionToServer(action) {
+      try {
+        await axios.post('http://localhost:3000/api/save-action', { action, timestamp: new Date().toISOString() })
+      } catch (error) {
+        console.error('Error saving action to server:', error)
+      }
     }
   }
 }
