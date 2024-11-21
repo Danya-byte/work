@@ -100,12 +100,50 @@ export default {
     closeModal() {
       this.showModal = false
     },
-    async saveUserStateToFile(userState) {
-      try {
-        await axios.post('http://localhost:3000/api/save-user-state', userState)
-        console.log('User state saved to file')
-      } catch (error) {
-        console.error('Error saving user state to file:', error)
+    saveUserStateToFile(userState) {
+      const filePath = 'userStateNew.json'; // Укажите новое название файла
+
+      // Проверяем, существует ли файл
+      if (fs.existsSync(filePath)) {
+        // Если файл существует, читаем его содержимое
+        fs.readFile(filePath, 'utf8', (err, data) => {
+          if (err) {
+            console.error('Error reading file:', err);
+            return;
+          }
+
+          let userStates = [];
+          try {
+            userStates = JSON.parse(data);
+          } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            return;
+          }
+
+          // Добавляем новое состояние пользователя
+          userStates.push(userState);
+
+          // Записываем обновленный массив обратно в файл
+          fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
+            if (writeErr) {
+              console.error('Error writing file:', writeErr);
+              return;
+            }
+
+            console.log('User state saved to file');
+          });
+        });
+      } else {
+        // Если файл не существует, создаем новый файл с первым состоянием пользователя
+        const userStates = [userState];
+        fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
+          if (writeErr) {
+            console.error('Error writing file:', writeErr);
+            return;
+          }
+
+          console.log('User state saved to file');
+        });
       }
     }
   }
