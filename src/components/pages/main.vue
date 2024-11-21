@@ -38,18 +38,22 @@ export default {
     // Получение данных с бэкенда
     try {
       const response = await axios.get('https://6c40-178-66-128-218.ngrok-free.app/api/total-members')
-      this.totalMembers = response.data.totalMembers.padStart(4, '0') // Дополняем нулями до 4 символов
+      this.totalMembers = response.data.totalMembers ? response.data.totalMembers.padStart(4, '0') : '0000' // Дополняем нулями до 4 символов
     } catch (error) {
       console.error('Error fetching total members:', error)
     }
 
     // Проверка, является ли пользователь амбассадором
-    const username = window.Telegram.WebApp.initDataUnsafe.user.username
-    try {
-      const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-ambassador', { username })
-      this.isAmbassador = response.data.isAmbassador
-    } catch (error) {
-      console.error('Error checking ambassador status:', error)
+    const user = window.Telegram.WebApp.initDataUnsafe.user
+    if (user && user.username) {
+      try {
+        const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-ambassador', { username: user.username })
+        this.isAmbassador = response.data.isAmbassador
+      } catch (error) {
+        console.error('Error checking ambassador status:', error)
+      }
+    } else {
+      console.error('User data is not available or username is missing')
     }
   },
   methods: {
