@@ -52,6 +52,7 @@ export default {
       }
     } else {
       console.error('User data is not available or username is missing')
+      this.showModal = true // Показываем модальное окно, если данные пользователя недоступны
     }
   },
   methods: {
