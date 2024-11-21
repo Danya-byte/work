@@ -40,27 +40,25 @@ export default {
     } catch (error) {
       console.error('Error fetching total members:', error)
     }
-
-    // Проверка, является ли пользователь амбассадором
-    const user = window.Telegram.WebApp.initDataUnsafe.user
-    if (user && user.username) {
-      try {
-        const response = await axios.post('http://localhost:3000/api/check-ambassador', { username: user.username })
-        this.isAmbassador = response.data.isAmbassador
-      } catch (error) {
-        console.error('Error checking ambassador status:', error)
-      }
-    } else {
-      console.error('User data is not available or username is missing')
-      this.showModal = true // Показываем модальное окно, если данные пользователя недоступны
-    }
   },
   methods: {
-    openRef() {
-      if (this.isAmbassador) {
-        this.show = 1
-        window.Telegram.WebApp.BackButton.show()
+    async openRef() {
+      const user = window.Telegram.WebApp.initDataUnsafe.user
+      if (user && user.username) {
+        try {
+          const response = await axios.post('http://localhost:3000/api/check-ambassador', { username: user.username })
+          this.isAmbassador = response.data.isAmbassador
+          if (this.isAmbassador) {
+            this.show = 1
+            window.Telegram.WebApp.BackButton.show()
+          } else {
+            this.showModal = true
+          }
+        } catch (error) {
+          console.error('Error checking ambassador status:', error)
+        }
       } else {
+        console.error('User data is not available or username is missing')
         this.showModal = true
       }
     },
