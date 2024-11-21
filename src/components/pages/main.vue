@@ -57,7 +57,7 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user
       if (user && user.username) {
         try {
-          const response = await axios.post('https://work-2-tau.vercel.app/api/check-user', { username: user.username })
+          const response = await axios.get(`https://work-2-tau.vercel.app/api/check-user?username=${user.username}`)
           this.userState = response.data
           this.saveUserStateToLocalStorage(this.userState)
           this.saveUserStateToServer(this.userState)
@@ -73,7 +73,7 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user
       if (user && user.username) {
         try {
-          const response = await axios.post('https://work-2-tau.vercel.app/api/check-ambassador', { username: user.username })
+          const response = await axios.get(`https://work-2-tau.vercel.app/api/check-ambassador?username=${user.username}`)
           this.isAmbassador = response.data.isAmbassador
           if (this.isAmbassador) {
             this.show = 1
@@ -141,7 +141,7 @@ export default {
 
 <template>
   <Background />
-  <Headers :data="show" />
+  <Headers v-if="show != 3" :data="show" @profOpen="openProf" />
   <main>
     <nav class="cnt">
       <div class="total">

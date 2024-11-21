@@ -35,7 +35,7 @@ const fetchUserData = async () => {
     if (user && user.username) {
         try {
             console.log('Fetching user data for username:', user.username)
-            const response = await axios.post('https://work-2-tau.vercel.app/api/check-user', { username: user.username })
+            const response = await axios.get(`https://work-2-tau.vercel.app/api/check-user?username=${user.username}`)
             userState.value = response.data
             console.log('User data fetched:', response.data)
         } catch (error) {
@@ -68,10 +68,7 @@ const joinEarly = async () => {
     const user = window.Telegram.WebApp.initDataUnsafe.user
     if (user && (user.username || user.id)) {
         try {
-            const response = await axios.post('https://work-2-tau.vercel.app/api/check-participant', {
-                username: user.username,
-                telegram_id: user.id
-            })
+            const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${user.username}&telegram_id=${user.id}`)
 
             if (response.data.exists) {
                 this.show = 3 // Перенаправляем на профиль пользователя

@@ -26,8 +26,8 @@ const logToFile = (message) => {
 
 // Логирование всех запросов
 app.use((req, res, next) => {
-  const { method, url, body } = req;
-  const logMessage = `Incoming request: ${method} ${url} ${JSON.stringify(body)}`;
+  const { method, url, query, body } = req;
+  const logMessage = `Incoming request: ${method} ${url} Query: ${JSON.stringify(query)} Body: ${JSON.stringify(body)}`;
   logToFile(logMessage);
   next();
 });
@@ -51,8 +51,8 @@ app.get('/api/total-members', async (req, res) => {
 });
 
 // Роут для проверки пользователя по username или telegram_id
-app.post('/api/check-user', async (req, res) => {
-  const { username, telegram_id } = req.body;
+app.get('/api/check-user', async (req, res) => {
+  const { username, telegram_id } = req.query;
 
   try {
     const { data, error } = await supabase
@@ -77,8 +77,8 @@ app.post('/api/check-user', async (req, res) => {
 });
 
 // Роут для проверки, является ли пользователь амбассадором
-app.post('/api/check-ambassador', (req, res) => {
-  const { username } = req.body;
+app.get('/api/check-ambassador', (req, res) => {
+  const { username } = req.query;
 
   if (AMBASSADORS.includes(username)) {
     res.json({ isAmbassador: true });
@@ -90,8 +90,8 @@ app.post('/api/check-ambassador', (req, res) => {
 });
 
 // Роут для проверки существования пользователя
-app.post('/api/check-participant', async (req, res) => {
-  const { username, telegram_id } = req.body;
+app.get('/api/check-participant', async (req, res) => {
+  const { username, telegram_id } = req.query;
 
   try {
     const { data, error } = await supabase
