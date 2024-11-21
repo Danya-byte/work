@@ -24,8 +24,6 @@ export default {
       totalMembers: '0000', // По умолчанию отображаем 0000
       isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
       showModal: false, // Флаг для отображения модального окна
-      userInfo: null, // Информация о пользователе
-      showJoinModal: false, // Флаг для отображения окна с условиями подписки
     }
   },
   async mounted() {
@@ -37,7 +35,7 @@ export default {
 
     // Получение данных с бэкенда
     try {
-      const response = await axios.get('https://6c40-178-66-128-218.ngrok-free.app/api/total-members')
+      const response = await axios.get('http://localhost:3000/api/total-members')
       this.totalMembers = response.data.totalMembers ? response.data.totalMembers.padStart(4, '0') : '0000' // Дополняем нулями до 4 символов
     } catch (error) {
       console.error('Error fetching total members:', error)
@@ -47,7 +45,7 @@ export default {
     const user = window.Telegram.WebApp.initDataUnsafe.user
     if (user && user.username) {
       try {
-        const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-ambassador', { username: user.username })
+        const response = await axios.post('http://localhost:3000/api/check-ambassador', { username: user.username })
         this.isAmbassador = response.data.isAmbassador
       } catch (error) {
         console.error('Error checking ambassador status:', error)
@@ -72,28 +70,11 @@ export default {
     closeModal() {
       this.showModal = false
     },
-    async checkUserInDatabase() {
-      const telegramId = window.Telegram.WebApp.initDataUnsafe.user.id
-      try {
-        const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-user', { telegram_id: telegramId })
-        if (response.data.position) {
-          this.userInfo = response.data
-          this.showJoinModal = true
-        } else {
-          this.showJoinModal = false
-        }
-      } catch (error) {
-        console.error('Error checking user in database:', error)
-      }
-    },
     openUserProfile() {
       this.show = 3 // Переключаем на окно user.vue
     },
-    async joinEarly() {
-      await this.checkUserInDatabase()
-      if (!this.showJoinModal) {
-        this.show = 4 // Переключаем на окно join.vue
-      }
+    joinEarly() {
+      this.show = 4 // Переключаем на окно join.vue
     }
   }
 }
@@ -128,14 +109,6 @@ export default {
     <div class="modal-content">
       <p>You are not an ambassador.</p>
       <button @click="closeModal">Close</button>
-    </div>
-  </div>
-  <div v-if="showJoinModal" class="join-modal">
-    <div class="join-modal-content">
-      <p v-if="userInfo">You are already in the database. Your position: {{ userInfo.position }}.</p>
-      <p v-else>You are not in the database.</p>
-      <button v-if="userInfo" @click="openUserProfile">Profile</button>
-      <button v-else @click="joinEarly">Join</button>
     </div>
   </div>
 </template>
@@ -217,39 +190,6 @@ p {
 }
 
 .modal-content button {
-  padding: 10px 20px;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.join-modal {
-  position: fixed;
-  z-index: 999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.join-modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.join-modal-content p {
-  margin-bottom: 20px;
-}
-
-.join-modal-content button {
   padding: 10px 20px;
   border: none;
   background: #007bff;
