@@ -104,31 +104,6 @@ export default {
       this.saveActionToLocalStorage('openUserProfile')
       this.saveActionToServer('openUserProfile')
     },
-    async joinEarly() {
-      await this.fetchUserData()
-      const user = window.Telegram.WebApp.initDataUnsafe.user
-      if (user && (user.username || user.id)) {
-        try {
-          const response = await axios.post('https://work-2-tau.vercel.app/api/check-participant', {
-            username: user.username,
-            telegram_id: user.id
-          })
-
-          if (response.data.exists) {
-            this.show = 3 // Перенаправляем на профиль пользователя
-          } else {
-            this.show = 4 // Перенаправляем на страницу регистрации
-          }
-
-          this.saveActionToLocalStorage('joinEarly')
-          this.saveActionToServer('joinEarly')
-        } catch (error) {
-          console.error('Error checking participant:', error)
-        }
-      } else {
-        console.error('User data is not available or username/telegram_id is missing')
-      }
-    },
     closeModal() {
       this.showModal = false
     },
