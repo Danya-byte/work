@@ -34,8 +34,10 @@ const fetchUserData = async () => {
     const user = window.Telegram.WebApp.initDataUnsafe.user
     if (user && user.username) {
         try {
-            const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
+            console.log('Fetching user data for username:', user.username)
+            const response = await axios.post('https://work-2-tau.vercel.app/api/check-user', { username: user.username })
             userState.value = response.data
+            console.log('User data fetched:', response.data)
         } catch (error) {
             console.error('Error fetching user data:', error)
         }
