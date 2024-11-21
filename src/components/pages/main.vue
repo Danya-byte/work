@@ -24,6 +24,13 @@ export default {
       totalMembers: '0000', // По умолчанию отображаем 0000
       isAmbassador: false, // Флаг, указывающий, является ли пользователь амбассадором
       showModal: false, // Флаг для отображения модального окна
+      userState: {
+        isRegistered: false,
+        position: null,
+        refNumber: null,
+        referralsCount: null,
+        isAmbassador: false
+      }
     }
   },
   async mounted() {
@@ -42,7 +49,22 @@ export default {
     }
   },
   methods: {
+    async fetchUserData() {
+      const user = window.Telegram.WebApp.initDataUnsafe.user
+      if (user && user.username) {
+        try {
+          const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
+          this.userState = response.data
+          this.saveUserStateToFile(this.userState)
+        } catch (error) {
+          console.error('Error fetching user data:', error)
+        }
+      } else {
+        console.error('User data is not available or username is missing')
+      }
+    },
     async openRef() {
+      await this.fetchUserData()
       const user = window.Telegram.WebApp.initDataUnsafe.user
       if (user && user.username) {
         try {
@@ -62,18 +84,29 @@ export default {
         this.showModal = true
       }
     },
-    openTask() {
+    async openTask() {
+      await this.fetchUserData()
       this.show = 2
       window.Telegram.WebApp.BackButton.show()
+    },
+    async openUserProfile() {
+      await this.fetchUserData()
+      this.show = 3 // Переключаем на окно user.vue
+    },
+    async joinEarly() {
+      await this.fetchUserData()
+      this.show = 4 // Переключаем на окно join.vue
     },
     closeModal() {
       this.showModal = false
     },
-    openUserProfile() {
-      this.show = 3 // Переключаем на окно user.vue
-    },
-    joinEarly() {
-      this.show = 4 // Переключаем на окно join.vue
+    async saveUserStateToFile(userState) {
+      try {
+        await axios.post('http://localhost:3000/api/save-user-state', userState)
+        console.log('User state saved to file')
+      } catch (error) {
+        console.error('Error saving user state to file:', error)
+      }
     }
   }
 }
@@ -102,7 +135,7 @@ export default {
   <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
   <Task v-if="show === 2" />
-  <User v-if="show === 3" /> <!-- Отображаем компонент user.vue -->
+  <User v-if="show === 3" :userState="userState" /> <!-- Передаем состояние пользователя в компонент user.vue -->
   <Join v-if="show === 4" /> <!-- Отображаем компонент join.vue -->
   <div v-if="showModal" class="modal">
     <div class="modal-content">
@@ -197,7 +230,3 @@ p {
   cursor: pointer;
 }
 </style>
-
-
-
-

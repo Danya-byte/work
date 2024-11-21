@@ -1,14 +1,23 @@
 <script setup>
 import { ref, computed } from 'vue'
+import axios from 'axios'
 
 const count = ref(0)
 const tg = window.Telegram.WebApp
+const userState = ref({
+  isRegistered: false,
+  position: null,
+  refNumber: null,
+  referralsCount: null,
+  isAmbassador: false
+})
 
 tg.MainButton.show();
 tg.MainButton.text = "Subscribe"
 
-const handleMainButtonClick = () => {
+const handleMainButtonClick = async () => {
     count.value++;
+    await fetchUserData()
     switch (count.value) {
         case 1:
             updateButton("Join", 'https://t.me/Greenwoods_Community')
@@ -18,6 +27,20 @@ const handleMainButtonClick = () => {
             break
         default:
             redirectToHome()
+    }
+}
+
+const fetchUserData = async () => {
+    const user = window.Telegram.WebApp.initDataUnsafe.user
+    if (user && user.username) {
+        try {
+            const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
+            userState.value = response.data
+        } catch (error) {
+            console.error('Error fetching user data:', error)
+        }
+    } else {
+        console.error('User data is not available or username is missing')
     }
 }
 
@@ -47,6 +70,12 @@ const headerText = computed(() => {
       </div>
       <div class="leader-title">
         <h1 v-html="headerText" class="header-text"></h1>
+      </div>
+      <div v-if="userState.isRegistered">
+        <p>Position: {{ userState.position }}</p>
+        <p>Ref Number: {{ userState.refNumber }}</p>
+        <p>Referrals Count: {{ userState.referralsCount }}</p>
+        <p v-if="userState.isAmbassador">You are an Ambassador</p>
       </div>
     </div>
   </div>

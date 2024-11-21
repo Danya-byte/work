@@ -1,6 +1,8 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -65,6 +67,55 @@ app.post('/api/check-ambassador', (req, res) => {
     res.json({ isAmbassador: true });
   } else {
     res.json({ isAmbassador: false });
+  }
+});
+
+// Роут для сохранения состояния пользователя в файл .json
+app.post('/api/save-user-state', (req, res) => {
+  const userState = req.body;
+  const filePath = path.join(__dirname, 'userState.json');
+
+  // Проверяем, существует ли файл
+  if (fs.existsSync(filePath)) {
+    // Если файл существует, читаем его содержимое
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      let userStates = [];
+      try {
+        userStates = JSON.parse(data);
+      } catch (parseError) {
+        console.error('Error parsing JSON:', parseError);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Добавляем новое состояние пользователя
+      userStates.push(userState);
+
+      // Записываем обновленный массив обратно в файл
+      fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
+        if (writeErr) {
+          console.error('Error writing file:', writeErr);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.json({ message: 'User state saved successfully' });
+      });
+    });
+  } else {
+    // Если файл не существует, создаем новый файл с первым состоянием пользователя
+    const userStates = [userState];
+    fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
+      if (writeErr) {
+        console.error('Error writing file:', writeErr);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      res.json({ message: 'User state saved successfully' });
+    });
   }
 });
 
