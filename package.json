@@ -10,6 +10,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.46.1",
     "@tonconnect/ui": "^2.0.9",
     "axios": "^0.21.1",
     "cors": "^2.8.5",

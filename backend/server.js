@@ -1,20 +1,9 @@
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const supabase = require('./supabase'); // Импортируем подключение к Supabase
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Настройки подключения к базе данных
-const pool = new Pool({
-  user: 'postgres',
-  host: '127.0.0.1',
-  database: 'greenwoods',
-  password: 'Dkflbvbhjdbx76',
-  port: 5432,
-});
 
 // Настройка CORS
 const corsOptions = {
@@ -30,9 +19,9 @@ const AMBASSADORS = ["backend_creator"];
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
   try {
-    const query = 'SELECT COUNT(*) FROM participants';
-    const result = await pool.query(query);
-    const totalMembers = result.rows[0].count.toString();
+    const { data, error } = await supabase.from('participants').select('*');
+    if (error) throw error;
+    const totalMembers = data.length.toString();
     res.json({ totalMembers });
   } catch (error) {
     console.error('Error fetching total members:', error);
@@ -45,11 +34,15 @@ app.post('/api/check-user', async (req, res) => {
   const { username, telegram_id } = req.body;
 
   try {
-    const query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
-    const result = await pool.query(query, [username, telegram_id]);
+    const { data, error } = await supabase
+      .from('participants')
+      .select('position, referral_number')
+      .or(`username.eq.${username},telegram_id.eq.${telegram_id}`);
 
-    if (result.rows.length > 0) {
-      res.json({ position: result.rows[0].position, referral_number: result.rows[0].referral_number });
+    if (error) throw error;
+
+    if (data.length > 0) {
+      res.json({ position: data[0].position, referral_number: data[0].referral_number });
     } else {
       res.json({ position: null, referral_number: null });
     }
@@ -70,101 +63,26 @@ app.post('/api/check-ambassador', (req, res) => {
   }
 });
 
-// Роут для сохранения состояния пользователя в файл с другим названием
-app.post('/api/save-user-state', (req, res) => {
-  const userState = req.body;
-  const filePath = path.join(__dirname, 'userStateNew.json'); // Укажите новое название файла
+// Роут для проверки существования пользователя
+app.post('/api/check-participant', async (req, res) => {
+  const { username, telegram_id } = req.body;
 
-  // Проверяем, существует ли файл
-  if (fs.existsSync(filePath)) {
-    // Если файл существует, читаем его содержимое
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
+  try {
+    const { data, error } = await supabase
+      .from('participants')
+      .select('position, referral_number')
+      .or(`username.eq.${username},telegram_id.eq.${telegram_id}`);
 
-      let userStates = [];
-      try {
-        userStates = JSON.parse(data);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
+    if (error) throw error;
 
-      // Добавляем новое состояние пользователя
-      userStates.push(userState);
-
-      // Записываем обновленный массив обратно в файл
-      fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
-        if (writeErr) {
-          console.error('Error writing file:', writeErr);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        res.json({ message: 'User state saved successfully' });
-      });
-    });
-  } else {
-    // Если файл не существует, создаем новый файл с первым состоянием пользователя
-    const userStates = [userState];
-    fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
-      if (writeErr) {
-        console.error('Error writing file:', writeErr);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      res.json({ message: 'User state saved successfully' });
-    });
-  }
-});
-
-// Роут для сохранения действия пользователя в файл
-app.post('/api/save-action', (req, res) => {
-  const action = req.body;
-  const filePath = path.join(__dirname, 'userActions.json'); // Укажите новое название файла для действий
-
-  // Проверяем, существует ли файл
-  if (fs.existsSync(filePath)) {
-    // Если файл существует, читаем его содержимое
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      let actions = [];
-      try {
-        actions = JSON.parse(data);
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      // Добавляем новое действие
-      actions.push(action);
-
-      // Записываем обновленный массив обратно в файл
-      fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
-        if (writeErr) {
-          console.error('Error writing file:', writeErr);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        res.json({ message: 'Action saved successfully' });
-      });
-    });
-  } else {
-    // Если файл не существует, создаем новый файл с первым действием
-    const actions = [action];
-    fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
-      if (writeErr) {
-        console.error('Error writing file:', writeErr);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      res.json({ message: 'Action saved successfully' });
-    });
+    if (data.length > 0) {
+      res.json({ exists: true, position: data[0].position, referral_number: data[0].referral_number });
+    } else {
+      res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error('Error checking participant:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
