@@ -5,12 +5,8 @@ const supabase = require('./supabase'); // Импортируем подключ
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Настройка CORS
-const corsOptions = {
-  origin: 'https://work-2-tau.vercel.app',
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+// Настройка CORS для разрешения запросов с любого домена
+app.use(cors());
 app.use(express.json());
 
 // Список амбассадоров
