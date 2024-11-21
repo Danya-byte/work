@@ -1,4 +1,4 @@
-const express = require('express');
+ъconst express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const fs = require('fs');
@@ -164,3 +164,11 @@ app.post('/api/save-action', (req, res) => {
       }
 
       res.json({ message: 'Action saved successfully' });
+    });
+  }
+});
+
+// Запуск сервера
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
