@@ -4,7 +4,6 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utils.web_app import WebAppInitData
 from asyncpg import Pool, create_pool
 
 # Настройки логирования
@@ -34,7 +33,7 @@ async def create_db_pool():
     global pool
     pool = await create_pool(**DB_CONFIG)
 
-@dp.message(Command("start"))
+@dp.message(Command("start"), lambda message: message.chat.id == message.from_user.id)
 async def start_command(message: types.Message):
     chat_id = message.chat.id
     username = message.from_user.username
@@ -69,12 +68,12 @@ async def start_command(message: types.Message):
         logging.info(f"User state saved for user {username} with ID {telegram_id}")
 
         if position is not None:
-            join_button = InlineKeyboardButton(text='Join', web_app=WebAppInitData(url='https://work-2-tau.vercel.app'))
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer(f'Welcome back! You are at position {position}.', reply_markup=keyboard)
             logging.info(f"Welcome message sent to user {username} with ID {telegram_id}")
         else:
-            join_button = InlineKeyboardButton(text='Join', web_app=WebAppInitData(url='https://work-2-tau.vercel.app'))
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer('Welcome! Please complete the following steps to join:', reply_markup=keyboard)
             logging.info(f"Join message sent to user {username} with ID {telegram_id}")
@@ -84,7 +83,7 @@ async def start_command(message: types.Message):
         await message.answer('An error occurred. Please try again later.')
         logging.info(f"Error occurred while checking user {username} with ID {telegram_id}")
 
-@dp.message()
+@dp.message(lambda message: message.chat.id == message.from_user.id)
 async def check_username(message: types.Message):
     chat_id = message.chat.id
     username = message.from_user.username
@@ -118,12 +117,12 @@ async def check_username(message: types.Message):
         logging.info(f"User state saved for user {username} with ID {message.from_user.id}")
 
         if position is not None:
-            join_button = InlineKeyboardButton(text='Join', web_app=WebAppInitData(url='https://work-2-tau.vercel.app'))
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer(f'Welcome back! You are at position {position}.', reply_markup=keyboard)
             logging.info(f"Welcome message sent to user {username} with ID {message.from_user.id}")
         else:
-            join_button = InlineKeyboardButton(text='Join', web_app=WebAppInitData(url='https://work-2-tau.vercel.app'))
+            join_button = InlineKeyboardButton(text='Join', web_app={'url': 'https://work-2-tau.vercel.app'})
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[join_button]])
             await message.answer('Welcome! Please complete the following steps to join:', reply_markup=keyboard)
             logging.info(f"Join message sent to user {username} with ID {message.from_user.id}")
