@@ -49,93 +49,85 @@ export default {
     }
   },
   methods: {
-    async fetchUserData() {
-      const user = window.Telegram.WebApp.initDataUnsafe.user
-      if (user && user.username) {
-        try {
-          const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
-          this.userState = response.data
-          this.saveUserStateToFile(this.userState)
-        } catch (error) {
-          console.error('Error fetching user data:', error)
-        }
-      } else {
-        console.error('User data is not available or username is missing')
+  async fetchUserData() {
+    const user = window.Telegram.WebApp.initDataUnsafe.user
+    if (user && user.username) {
+      try {
+        const response = await axios.post('http://localhost:3000/api/check-user', { username: user.username })
+        this.userState = response.data
+        this.saveUserStateToFile(this.userState)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
       }
-    },
-    async openRef() {
-      await this.fetchUserData()
-      const user = window.Telegram.WebApp.initDataUnsafe.user
-      if (user && user.username) {
-        try {
-          const response = await axios.post('http://localhost:3000/api/check-ambassador', { username: user.username })
-          this.isAmbassador = response.data.isAmbassador
-          if (this.isAmbassador) {
-            this.show = 1
-            window.Telegram.WebApp.BackButton.show()
-          } else {
-            this.showModal = true
-          }
-        } catch (error) {
-          console.error('Error checking ambassador status:', error)
+    } else {
+      console.error('User data is not available or username is missing')
+    }
+  },
+  async openRef() {
+    await this.fetchUserData()
+    const user = window.Telegram.WebApp.initDataUnsafe.user
+    if (user && user.username) {
+      try {
+        const response = await axios.post('http://localhost:3000/api/check-ambassador', { username: user.username })
+        this.isAmbassador = response.data.isAmbassador
+        if (this.isAmbassador) {
+          this.show = 1
+          window.Telegram.WebApp.BackButton.show()
+        } else {
+          this.showModal = true
         }
-      } else {
-        console.error('User data is not available or username is missing')
-        this.showModal = true
+        this.saveActionToFile('openRef') // Записываем действие в файл
+      } catch (error) {
+        console.error('Error checking ambassador status:', error)
       }
-    },
-    async openTask() {
-      await this.fetchUserData()
-      this.show = 2
-      window.Telegram.WebApp.BackButton.show()
-    },
-    async openUserProfile() {
-      await this.fetchUserData()
-      this.show = 3 // Переключаем на окно user.vue
-    },
-    async joinEarly() {
-      await this.fetchUserData()
-      this.show = 4 // Переключаем на окно join.vue
-    },
-    closeModal() {
-      this.showModal = false
-    },
-    saveUserStateToFile(userState) {
-      const filePath = 'userStateNew.json'; // Укажите новое название файла
+    } else {
+      console.error('User data is not available or username is missing')
+      this.showModal = true
+    }
+  },
+  async openTask() {
+    await this.fetchUserData()
+    this.show = 2
+    window.Telegram.WebApp.BackButton.show()
+    this.saveActionToFile('openTask') // Записываем действие в файл
+  },
+  async openUserProfile() {
+    await this.fetchUserData()
+    this.show = 3 // Переключаем на окно user.vue
+    this.saveActionToFile('openUserProfile') // Записываем действие в файл
+  },
+  async joinEarly() {
+    await this.fetchUserData()
+    this.show = 4 // Переключаем на окно join.vue
+    this.saveActionToFile('joinEarly') // Записываем действие в файл
+  },
+  closeModal() {
+    this.showModal = false
+  },
+  saveUserStateToFile(userState) {
+    const filePath = 'userStateNew.json'; // Укажите новое название файла
 
-      // Проверяем, существует ли файл
-      if (fs.existsSync(filePath)) {
-        // Если файл существует, читаем его содержимое
-        fs.readFile(filePath, 'utf8', (err, data) => {
-          if (err) {
-            console.error('Error reading file:', err);
-            return;
-          }
+    // Проверяем, существует ли файл
+    if (fs.existsSync(filePath)) {
+      // Если файл существует, читаем его содержимое
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading file:', err);
+          return;
+        }
 
-          let userStates = [];
-          try {
-            userStates = JSON.parse(data);
-          } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            return;
-          }
+        let userStates = [];
+        try {
+          userStates = JSON.parse(data);
+        } catch (parseError) {
+          console.error('Error parsing JSON:', parseError);
+          return;
+        }
 
-          // Добавляем новое состояние пользователя
-          userStates.push(userState);
+        // Добавляем новое состояние пользователя
+        userStates.push(userState);
 
-          // Записываем обновленный массив обратно в файл
-          fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
-            if (writeErr) {
-              console.error('Error writing file:', writeErr);
-              return;
-            }
-
-            console.log('User state saved to file');
-          });
-        });
-      } else {
-        // Если файл не существует, создаем новый файл с первым состоянием пользователя
-        const userStates = [userState];
+        // Записываем обновленный массив обратно в файл
         fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
           if (writeErr) {
             console.error('Error writing file:', writeErr);
@@ -144,7 +136,64 @@ export default {
 
           console.log('User state saved to file');
         });
-      }
+      });
+    } else {
+      // Если файл не существует, создаем новый файл с первым состоянием пользователя
+      const userStates = [userState];
+      fs.writeFile(filePath, JSON.stringify(userStates, null, 2), 'utf8', (writeErr) => {
+        if (writeErr) {
+          console.error('Error writing file:', writeErr);
+          return;
+        }
+
+        console.log('User state saved to file');
+      });
+    }
+  },
+  saveActionToFile(action) {
+    const filePath = 'userActions.json'; // Укажите новое название файла для действий
+
+    // Проверяем, существует ли файл
+    if (fs.existsSync(filePath)) {
+      // Если файл существует, читаем его содержимое
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading file:', err);
+          return;
+        }
+
+        let actions = [];
+        try {
+          actions = JSON.parse(data);
+        } catch (parseError) {
+          console.error('Error parsing JSON:', parseError);
+          return;
+        }
+
+        // Добавляем новое действие
+        actions.push({ action, timestamp: new Date().toISOString() });
+
+        // Записываем обновленный массив обратно в файл
+        fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
+          if (writeErr) {
+            console.error('Error writing file:', writeErr);
+            return;
+          }
+
+          console.log('Action saved to file');
+        });
+      });
+    } else {
+      // Если файл не существует, создаем новый файл с первым действием
+      const actions = [{ action, timestamp: new Date().toISOString() }];
+      fs.writeFile(filePath, JSON.stringify(actions, null, 2), 'utf8', (writeErr) => {
+        if (writeErr) {
+          console.error('Error writing file:', writeErr);
+          return;
+        }
+
+        console.log('Action saved to file');
+      });
     }
   }
 }
