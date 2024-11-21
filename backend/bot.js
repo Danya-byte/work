@@ -22,7 +22,10 @@ bot.onText(/\/start/, async (msg) => {
   const username = msg.from.username;
   const telegram_id = msg.from.id;
 
+  console.log(`/start command received from user ${username} with ID ${telegram_id}`);
+
   if (!username) {
+    console.log(`Username is missing for user with ID ${telegram_id}`);
     bot.sendMessage(chatId, 'Please set a username in your Telegram profile to continue.');
     return;
   }
@@ -33,6 +36,8 @@ bot.onText(/\/start/, async (msg) => {
     const checkUserResult = await pool.query(checkUserQuery, [username, telegram_id]);
     const { position, referral_number } = checkUserResult.rows[0] || { position: null, referral_number: null };
 
+    console.log(`User ${username} with ID ${telegram_id} checked in the database. Position: ${position}, Referral Number: ${referral_number}`);
+
     // Сохранение состояния пользователя в файл
     const userState = {
       username,
@@ -42,6 +47,8 @@ bot.onText(/\/start/, async (msg) => {
     };
     fs.writeFileSync(path.join(__dirname, 'userState.json'), JSON.stringify(userState));
 
+    console.log(`User state saved for user ${username} with ID ${telegram_id}`);
+
     if (position !== null) {
       bot.sendMessage(chatId, `Welcome back! You are at position ${position}.`, {
         reply_markup: {
@@ -50,6 +57,7 @@ bot.onText(/\/start/, async (msg) => {
           ]
         }
       });
+      console.log(`Welcome message sent to user ${username} with ID ${telegram_id}`);
     } else {
       bot.sendMessage(chatId, 'Welcome! Please complete the following steps to join:', {
         reply_markup: {
@@ -58,10 +66,12 @@ bot.onText(/\/start/, async (msg) => {
           ]
         }
       });
+      console.log(`Join message sent to user ${username} with ID ${telegram_id}`);
     }
   } catch (error) {
     console.error('Error checking user:', error);
     bot.sendMessage(chatId, 'An error occurred. Please try again later.');
+    console.log(`Error occurred while checking user ${username} with ID ${telegram_id}`);
   }
 });
 
@@ -70,7 +80,10 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
 
+  console.log(`Message received from user ${username} with ID ${msg.from.id}`);
+
   if (!username) {
+    console.log(`Username is missing for user with ID ${msg.from.id}`);
     bot.sendMessage(chatId, 'Please set a username in your Telegram profile to continue.');
     return;
   }
@@ -81,6 +94,8 @@ bot.on('message', async (msg) => {
     const checkUserResult = await pool.query(checkUserQuery, [username, msg.from.id]);
     const { position, referral_number } = checkUserResult.rows[0] || { position: null, referral_number: null };
 
+    console.log(`User ${username} with ID ${msg.from.id} checked in the database. Position: ${position}, Referral Number: ${referral_number}`);
+
     // Сохранение состояния пользователя в файл
     const userState = {
       username,
@@ -90,6 +105,8 @@ bot.on('message', async (msg) => {
     };
     fs.writeFileSync(path.join(__dirname, 'userState.json'), JSON.stringify(userState));
 
+    console.log(`User state saved for user ${username} with ID ${msg.from.id}`);
+
     if (position !== null) {
       bot.sendMessage(chatId, `Welcome back! You are at position ${position}.`, {
         reply_markup: {
@@ -98,6 +115,7 @@ bot.on('message', async (msg) => {
           ]
         }
       });
+      console.log(`Welcome message sent to user ${username} with ID ${msg.from.id}`);
     } else {
       bot.sendMessage(chatId, 'Welcome! Please complete the following steps to join:', {
         reply_markup: {
@@ -106,9 +124,11 @@ bot.on('message', async (msg) => {
           ]
         }
       });
+      console.log(`Join message sent to user ${username} with ID ${msg.from.id}`);
     }
   } catch (error) {
     console.error('Error checking user:', error);
     bot.sendMessage(chatId, 'An error occurred. Please try again later.');
+    console.log(`Error occurred while checking user ${username} with ID ${msg.from.id}`);
   }
 });
