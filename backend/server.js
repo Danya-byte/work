@@ -70,10 +70,10 @@ app.post('/api/check-ambassador', (req, res) => {
   }
 });
 
-// Роут для сохранения состояния пользователя в файл .json
+// Роут для сохранения состояния пользователя в файл с другим названием
 app.post('/api/save-user-state', (req, res) => {
   const userState = req.body;
-  const filePath = path.join(__dirname, 'userState.json');
+  const filePath = path.join(__dirname, 'userStateNew.json'); // Укажите новое название файла
 
   // Проверяем, существует ли файл
   if (fs.existsSync(filePath)) {
