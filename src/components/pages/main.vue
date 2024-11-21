@@ -37,7 +37,7 @@ export default {
 
     // Получение данных с бэкенда
     try {
-      const response = await axios.get('http://localhost:3000/api/total-members')
+      const response = await axios.get('https://6c40-178-66-128-218.ngrok-free.app/api/total-members')
       this.totalMembers = response.data.totalMembers.padStart(4, '0') // Дополняем нулями до 4 символов
     } catch (error) {
       console.error('Error fetching total members:', error)
@@ -46,7 +46,7 @@ export default {
     // Проверка, является ли пользователь амбассадором
     const username = window.Telegram.WebApp.initDataUnsafe.user.username
     try {
-      const response = await axios.post('http://localhost:3000/api/check-ambassador', { username })
+      const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-ambassador', { username })
       this.isAmbassador = response.data.isAmbassador
     } catch (error) {
       console.error('Error checking ambassador status:', error)
@@ -71,7 +71,7 @@ export default {
     async checkUserInDatabase() {
       const telegramId = window.Telegram.WebApp.initDataUnsafe.user.id
       try {
-        const response = await axios.post('http://localhost:3000/api/check-user', { telegram_id: telegramId })
+        const response = await axios.post('https://6c40-178-66-128-218.ngrok-free.app/api/check-user', { telegram_id: telegramId })
         if (response.data.position) {
           this.userInfo = response.data
           this.showJoinModal = true
