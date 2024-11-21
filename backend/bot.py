@@ -48,7 +48,8 @@ async def start_command(message: types.Message):
 
     try:
         async with pool.acquire() as connection:
-            check_user_query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2'
+            check_user_query = ('SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id '
+                                '= $2')
             check_user_result = await connection.fetchrow(check_user_query, username, telegram_id)
             position = check_user_result['position'] if check_user_result else None
             referral_number = check_user_result['referral_number'] if check_user_result else None
