@@ -54,40 +54,31 @@ app.get('/api/total-members', async (req, res) => {
 
 app.get('/api/check-participant', async (req, res) => {
   const { username, telegram_id } = req.query;
-  logger.info(`Incoming request: GET /api/check-participant Query: { username: ${username}, telegram_id: ${telegram_id} }`);
 
   try {
     const { data, error } = await supabase
       .from('participants')
       .select('*')
       .or(`username.eq.${username},telegram_id.eq.${telegram_id}`)
-      .single();
+      .maybeSingle(); // Используем maybeSingle для предотвращения ошибок, если данные отсутствуют
 
     if (error) {
       logger.error(`Supabase error: ${error.message}`);
       throw error;
     }
 
-    if (data) {
-      res.json({
-        isRegistered: true,
-        position: data.position,
-        refNumber: data.referral_number,
-        referralsCount: data.referrals_count,
-      });
-    } else {
-      res.json({
-        isRegistered: false,
-        position: null,
-        refNumber: null,
-        referralsCount: 0,
-      });
-    }
+    res.json({
+      isRegistered: !!data, // true, если data не null
+      position: data?.position || null,
+      refNumber: data?.referral_number || null,
+      referralsCount: data?.referrals_count || 0,
+    });
   } catch (error) {
     logger.error(`Error checking participant: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;

@@ -6,8 +6,7 @@ import axios from 'axios'
 const router = useRouter()
 const tg = window.Telegram.WebApp
 
-const handleJoinClick = async (e) => {
-    e.preventDefault()
+const handleJoinClick = async () => {
     await checkUser()
 }
 
@@ -16,16 +15,18 @@ const checkUser = async () => {
     const telegram_id = tg.initDataUnsafe?.user?.id || ''
 
     try {
-        const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
+        const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
+            params: { username, telegram_id }
+        })
 
-        if (response.data.exists) {
+        if (response.data.isRegistered) {
             router.push({ name: 'profile', params: { userId: telegram_id } })
         } else {
             router.push({ name: 'join' })
         }
     } catch (error) {
         console.error('Error checking user:', error)
-        router.push({ name: 'join' })
+        router.push({ name: 'join' }) // На случай ошибки API
     }
 }
 </script>
@@ -33,9 +34,7 @@ const checkUser = async () => {
 <template>
   <footer>
     <div class="another">
-      <RouterLink to="/join" @click="handleJoinClick">
-        <button>Join earlyer</button>
-      </RouterLink>
+      <button @click="handleJoinClick">Join earlyer</button>
     </div>
     <nav class="bar">
       <div class="nav-icon" @click="$emit('taskOpen')">
@@ -50,7 +49,6 @@ const checkUser = async () => {
     </nav>
   </footer>
 </template>
-
 <style scoped>
 footer {
   position: absolute;
