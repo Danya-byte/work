@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 const router = useRouter()
 const tg = window.Telegram.WebApp
@@ -10,8 +11,8 @@ const checkUser = async () => {
   const telegram_id = tg.initDataUnsafe?.user?.id || ''
 
   try {
-    const response = await fetch(`/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
-    const data = await response.json()
+    const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
+    const data = response.data
 
     if (data.exists) {
       // Если пользователь существует, перенаправляем на профиль
