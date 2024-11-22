@@ -8,14 +8,13 @@ const tg = window.Telegram.WebApp
 
 const handleJoinClick = async (e) => {
     e.preventDefault()
-    const user = tg.initDataUnsafe?.user
+   const user = tg.initDataUnsafe?.user;
 
-    console.log('1. User data from Telegram:', user)
+if (!user || !user.username || !user.id) {
+    console.error('Telegram user data is missing or incomplete:', user);
+    return;
+}
 
-    if (!user) {
-        console.error('No telegram user data')
-        return
-    }
 
     try {
         console.log('2. Making request to check-participant with:', {
@@ -50,9 +49,9 @@ const handleJoinClick = async (e) => {
     }
 }
 
-// const showJoinButton = computed(() => {
-//     return router.currentRoute.value.path !== '/join'
-// })
+const showJoinButton = computed(() => {
+    return router.currentRoute.value.path !== '/join'
+})
 </script>
 
 <template>
