@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 
 const count = ref(0)
@@ -11,24 +11,6 @@ const userState = ref({
   referralsCount: null,
   isAmbassador: false
 })
-
-tg.MainButton.show();
-tg.MainButton.text = "Subscribe"
-
-const handleMainButtonClick = async () => {
-    count.value++;
-    await fetchUserData()
-    switch (count.value) {
-        case 1:
-            updateButton("Join", 'https://t.me/Greenwoods_Community')
-            break
-        case 2:
-            updateButton("Start", 'https://t.me/GreenWoodsGlobal')
-            break
-        default:
-            redirectToHome()
-    }
-}
 
 const fetchUserData = async () => {
     const user = window.Telegram.WebApp.initDataUnsafe.user
@@ -43,6 +25,27 @@ const fetchUserData = async () => {
         }
     } else {
         console.error('User data is not available or username is missing')
+    }
+}
+
+onMounted(async () => {
+    await fetchUserData()
+    tg.MainButton.show();
+    tg.MainButton.text = "Subscribe"
+})
+
+const handleMainButtonClick = async () => {
+    count.value++;
+    await fetchUserData()
+    switch (count.value) {
+        case 1:
+            updateButton("Join", 'https://t.me/Greenwoods_Community')
+            break
+        case 2:
+            updateButton("Start", 'https://t.me/GreenWoodsGlobal')
+            break
+        default:
+            redirectToHome()
     }
 }
 
