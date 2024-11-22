@@ -58,8 +58,8 @@ const showJoinButton = computed(() => {
 <template>
   <footer>
     <div class="another" v-if="showJoinButton">
-      <RouterLink @click="handleJoinClick">
-        <button>Join earlier</button>
+      <RouterLink>
+        <button @click="handleJoinClick">Join earlier</button>
       </RouterLink>
     </div>
     <nav class="bar">
