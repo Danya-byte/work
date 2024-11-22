@@ -1,57 +1,70 @@
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 
-const router = useRouter();
-const tg = window.Telegram.WebApp;
+const router = useRouter()
+const tg = window.Telegram.WebApp
 
 const handleJoinClick = async (e) => {
-  e.preventDefault();
+    e.preventDefault()
+    const user = tg.initDataUnsafe?.user
 
-  const user = tg.initDataUnsafe?.user;
+    console.log('1. User data from Telegram:', user)
 
-  if (!user || !user.username || !user.id) {
-    console.error('Telegram user data is missing or incomplete:', user);
-    return;
-  }
-
-  try {
-    console.log('Checking participant:', { username: user.username, telegram_id: user.id });
-
-    const { data } = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
-      params: {
-        username: user.username,
-        telegram_id: user.id,
-      },
-    });
-
-    console.log('API Response:', data);
-
-    if (data.exists) {
-      console.log(`User exists, redirecting to /profile/${user.id}`);
-      await router.push(`/profile/${user.id}`);
-    } else {
-      console.log('User not found, redirecting to /join');
-      await router.push('/join');
+    if (!user) {
+        console.error('No telegram user data')
+        return
     }
-  } catch (error) {
-    console.error('Error checking user:', error);
-    await router.push('/join');
-  }
-};
 
-const showJoinButton = computed(() => router.currentRoute.value.path !== '/join');
+    try {
+        console.log('2. Making request to check-participant with:', {
+            username: user.username,
+            telegram_id: user.id
+        })
+
+        const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
+            params: {
+                username: user.username,
+                telegram_id: user.id
+            }
+        })
+
+        console.log('3. API Response:', response.data)
+
+        if (response.data.exists) {
+            console.log('4. User exists, redirecting to /user')
+            try {
+                await router.push('/profile/' + user.id)
+                console.log('5. Redirect successful')
+            } catch (navError) {
+                console.error('6. Navigation error:', navError)
+            }
+        } else {
+            console.log('4. User does not exist, redirecting to /join')
+            await router.push('/join')
+        }
+    } catch (error) {
+        console.error('Error checking user:', error)
+        await router.push('/join')
+    }
+}
+
+
 </script>
 
 <template>
   <footer>
-      <button class="join-btn" @click="handleJoinClick">Join Earlier</button>
-    <nav class="nav-bar">
+
+      <RouterLink to="#" @click="handleJoinClick">
+        <button >Join earlier</button>
+      </RouterLink>
+
+    <nav class="bar">
       <div class="nav-icon" @click="$emit('taskOpen')">
         <IconTask />
       </div>
-      <div class="nav-icon" @click="router.push('/')">
+      <div class="nav-icon">
         <IconMain />
       </div>
       <div class="nav-icon" @click="$emit('refOpen')">
@@ -63,69 +76,55 @@ const showJoinButton = computed(() => router.currentRoute.value.path !== '/join'
 
 <style scoped>
 footer {
-  position: fixed;
+  position: absolute;
+  z-index: 100;
   bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  width: 100vw;
+  min-height: 120px;
+  backdrop-filter: blur(1px);
+  display: grid;
   align-items: center;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 10px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  gap: 20px;
 }
 
-.join-section {
-  margin-bottom: 10px;
+.another {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.bar {
   display: flex;
   justify-content: center;
-  width: 100%;
-}
-
-.join-btn {
-  background-color: #00aaff;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.join-btn:hover {
-  background-color: #0088cc;
-}
-
-.nav-bar {
-  display: flex;
-  justify-content: space-evenly;
   align-items: center;
-  width: 100%;
-  padding: 10px 0;
+  gap: 25%;
+  width: 100vw;
+  padding: 10px;
+  background: #000000;
+  box-shadow: 0px 9px 13px 12px #000;
 }
 
 .nav-icon {
-  display: flex;
+  display: grid;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: #1a1a1a;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  background: #000000;
+  border-radius: 10px;
+  padding: 3px;
 }
 
-.nav-icon:hover {
-  transform: scale(1.1);
-}
-
-.nav-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #ffffff;
+.another button {
+  height: fit-content;
+  padding: 10px;
+  width: 80vw;
+  border: 0;
+  background: #66cdaa;
+  border-radius: 10px;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 600;
+  border-bottom: 5px solid #539881;
+  color: #0e0e0e;
 }
 </style>
