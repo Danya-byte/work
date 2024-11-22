@@ -46,7 +46,7 @@ const showJoinButton = computed(() => router.currentRoute.value.path !== '/join'
 
 <template>
   <footer>
-    <div class="join-section" v-if="showJoinButton">
+    <div class="join-section">
       <button class="join-btn" @click="handleJoinClick">Join Earlier</button>
     </div>
     <nav class="nav-bar">
