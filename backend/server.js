@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   logger.info(`Incoming request: ${method} ${url} Query: ${JSON.stringify(query)} Body: ${JSON.stringify(body)}`);
   next();
 });
-const AMBASSADORS = ["backend_creator"]; // Убедитесь, что значение правильное
+const AMBASSADORS = ["#"]; // Убедитесь, что значение правильное
 
 let totalMembersCache = null;
 let lastTotalMembersFetchTime = null;
