@@ -46,6 +46,7 @@ let totalMembersCache = null;
 let lastTotalMembersFetchTime = null;
 const CACHE_DURATION = 60000; // 1 минута
 
+// Получение общего количества участников
 app.get('/api/total-members', async (req, res) => {
   const now = Date.now();
   if (totalMembersCache && (now - lastTotalMembersFetchTime < CACHE_DURATION)) {
@@ -70,38 +71,51 @@ app.get('/api/total-members', async (req, res) => {
   }
 });
 
+// Проверка участника
 app.get('/api/check-participant', async (req, res) => {
   const { username, telegram_id } = req.query;
 
   console.log('1. Received check request for:', { username, telegram_id });
+  logger.info(`Checking participant: username=${username}, telegram_id=${telegram_id}`);
 
   try {
     console.log('2. Constructing query for username:', username);
 
-    const { data, error } = await supabase
+    const query = supabase
       .from('participants')
       .select('*')
-      .eq('username', username)
-      .single();
+      .or(`username.ilike.${username},telegram_id.eq.${telegram_id}`)
+      .maybeSingle();
 
-    console.log('3. Query result:', { data, error });
+    console.log('3. Query:', query.toString());
 
-    if (error && error.code !== 'PGRST116') { // Игнорируем ошибку "не найдено"
-      console.error('4. Supabase error:', error);
+    const { data, error } = await query;
+
+    console.log('4. Query result:', { data, error });
+
+    if (error) {
+      console.error('5. Supabase error:', error);
+      logger.error(`Supabase error: ${error.message}`);
       throw error;
     }
 
     const exists = !!data;
-    console.log('5. User exists:', exists);
+    console.log('6. User exists:', exists);
+    logger.info(`Check participant result: ${exists}`);
 
-    res.json({ exists });
+    res.json({
+      exists,
+      data: data || null
+    });
 
   } catch (error) {
-    console.error('6. Error processing request:', error);
-    res.json({ exists: false });
+    console.error('7. Error processing request:', error);
+    logger.error(`Error checking participant: ${error.message}`);
+    res.json({ exists: false, data: null });
   }
 });
 
+// Проверка амбассадора
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;
   const isAmbassador = AMBASSADORS.includes(username);
@@ -109,10 +123,10 @@ app.post('/api/check-ambassador', (req, res) => {
   res.json({ isAmbassador });
 });
 
+// Логирование действий пользователя
 app.post('/api/log-action', async (req, res) => {
   const { action, userId, timestamp } = req.body;
   logger.info(`Logging user action: ${action} for user ${userId}`);
-
   try {
     const { error } = await supabase
       .from('user_actions')
@@ -128,6 +142,7 @@ app.post('/api/log-action', async (req, res) => {
   }
 });
 
+// Клиентское логирование
 app.post('/api/client-log', async (req, res) => {
   const { action, message, timestamp } = req.body;
 
@@ -140,6 +155,7 @@ app.post('/api/client-log', async (req, res) => {
   }
 });
 
+// Запуск сервера
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
 });
