@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import User from '../pages/user.vue'
 
 const props = defineProps({
   data: {
@@ -23,13 +22,7 @@ const headerClass = computed(() => {
     return fetchClass()
 })
 
-const refWindow = () => {
-    if (f.value == false) {
-        f.value = true
-    } else {
-        f.value = false
-    }
-}
+defineEmits(['profOpen'])
 </script>
 
 <template>
@@ -37,16 +30,13 @@ const refWindow = () => {
         <div :class="`view-info ${headerClass}`">
             <div style="display: flex; align-items: center; justify-content: center;">
                 <div>
-                    <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="refWindow()"/>
+                    <img id="profile" style="border-radius: 10px;" width="40px" height="40px" src="https://t.me/i/userpic/160/LowGas.jpg" @click="$emit('profOpen')"/>
                 </div>
             </div>
             <div v-bind="connect()">
                 <div id="ton-connect"></div>
             </div>
         </div>
-    </template>
-    <template v-else>
-        <User />
     </template>
 </template>
 

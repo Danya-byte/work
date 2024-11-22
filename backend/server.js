@@ -1,74 +1,161 @@
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
-
+const supabase = require('./supabase');
+const winston = require('winston');
 const app = express();
+
 const port = process.env.PORT || 3000;
-
-// Настройки подключения к базе данных
-const pool = new Pool({
-  user: 'postgres',
-  host: '127.0.0.1',
-  database: 'greenwoods',
-  password: 'Dkflbvbhjdbx76',
-  port: 5432,
-});
-
-// Настройка CORS
-const corsOptions = {
-  origin: 'https://work-2-tau.vercel.app',
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
-// Список амбассадоров
-const AMBASSADORS = ["backend_creator"];
+// Настройка логгера
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
 
-// Роут для получения общего количества участников
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
+
+// Middleware для логирования запросов
+app.use((req, res, next) => {
+  const { method, url, query, body } = req;
+  logger.info(`Incoming request: ${method} ${url} Query: ${JSON.stringify(query)} Body: ${JSON.stringify(body)}`);
+  next();
+});
+
+const AMBASSADORS = [
+  "vitmosk",
+  "DjekillHayd",
+  "eeeergoo",
+  "Kvari6",
+  "plazma787vvv",
+  "borcuxa1996",
+  "Igor6i9"
+];
+
+// Кэширование для total-members
+let totalMembersCache = null;
+let lastTotalMembersFetchTime = null;
+const CACHE_DURATION = 60000; // 1 минута
+
+// Получение общего количества участников
 app.get('/api/total-members', async (req, res) => {
+  const now = Date.now();
+  if (totalMembersCache && (now - lastTotalMembersFetchTime < CACHE_DURATION)) {
+    logger.info(`Total members fetched from cache: ${totalMembersCache}`);
+    return res.json({ totalMembers: totalMembersCache.toString() });
+  }
+
   try {
-    const query = 'SELECT COUNT(*) FROM participants';
-    const result = await pool.query(query);
-    const totalMembers = result.rows[0].count.toString();
-    res.json({ totalMembers });
+    const { count, error } = await supabase
+      .from('participants')
+      .select('*', { count: 'exact' });
+
+    if (error) throw error;
+
+    totalMembersCache = count;
+    lastTotalMembersFetchTime = now;
+    logger.info(`Total members fetched from database: ${count}`);
+    res.json({ totalMembers: count.toString() });
   } catch (error) {
-    console.error('Error fetching total members:', error);
+    logger.error(`Error fetching total members: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-// Роут для проверки пользователя по username или telegram_id
-app.post('/api/check-user', async (req, res) => {
-  const { username, telegram_id } = req.body;
+// Проверка участника
+app.get('/api/check-participant', async (req, res) => {
+  const { username, telegram_id } = req.query;
+
+  console.log('1. Received check request for:', { username, telegram_id });
+  logger.info(`Checking participant: username=${username}, telegram_id=${telegram_id}`);
 
   try {
-    const query = 'SELECT position, referral_number FROM participants WHERE username = $1 OR telegram_id = $2';
-    const result = await pool.query(query, [username, telegram_id]);
+    console.log('2. Constructing query for username:', username);
 
-    if (result.rows.length > 0) {
-      res.json({ position: result.rows[0].position, referral_number: result.rows[0].referral_number });
-    } else {
-      res.json({ position: null, referral_number: null });
+    const query = supabase
+      .from('participants')
+      .select('*')
+      .or(`username.ilike.${username},telegram_id.eq.${telegram_id}`)
+      .maybeSingle();
+
+    console.log('3. Query:', query.toString());
+
+    const { data, error } = await query;
+
+    console.log('4. Query result:', { data, error });
+
+    if (error) {
+      console.error('5. Supabase error:', error);
+      logger.error(`Supabase error: ${error.message}`);
+      throw error;
     }
+
+    const exists = !!data;
+    console.log('6. User exists:', exists);
+    logger.info(`Check participant result: ${exists}`);
+
+    res.json({
+      exists,
+      data: data || null
+    });
+
   } catch (error) {
-    console.error('Error checking user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('7. Error processing request:', error);
+    logger.error(`Error checking participant: ${error.message}`);
+    res.json({ exists: false, data: null });
   }
 });
 
-// Роут для проверки, является ли пользователь амбассадором
+// Проверка амбассадора
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;
+  const isAmbassador = AMBASSADORS.includes(username);
+  logger.info(`Checking ambassador status for ${username}: ${isAmbassador}`);
+  res.json({ isAmbassador });
+});
 
-  if (AMBASSADORS.includes(username)) {
-    res.json({ isAmbassador: true });
+// Логирование действий пользователя
+app.post('/api/log-action', async (req, res) => {
+  const { action, userId, timestamp } = req.body;
+  logger.info(`Logging user action: ${action} for user ${userId}`);
+  try {
+    const { error } = await supabase
+      .from('user_actions')
+      .insert([{ action, user_id: userId, timestamp }]);
+
+    if (error) throw error;
+
+    logger.info('Action logged successfully');
+    res.json({ success: true });
+  } catch (error) {
+    logger.error(`Error logging action: ${error.message}`);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Клиентское логирование
+app.post('/api/client-log', async (req, res) => {
+  const { action, message, timestamp } = req.body;
+
+  if (action === 'log') {
+    logger.info(`[Client Log] ${timestamp}: ${message}`);
+    res.json({ success: true });
   } else {
-    res.json({ isAmbassador: false });
+    logger.warn(`Invalid client log action: ${action}`);
+    res.status(400).json({ error: 'Invalid action' });
   }
 });
 
 // Запуск сервера
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });

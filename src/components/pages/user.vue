@@ -1,6 +1,6 @@
 <template>
     <div class="user">
-    <RouterLink to="/"><button class="back">Х</button></RouterLink>
+        <button class="back" @click="back">Back</button>
         <div style="text-align: center;">
             <img src="https://em-content.zobj.net/source/telegram/386/people-hugging_1fac2.webp" width="150vw">
         </div>

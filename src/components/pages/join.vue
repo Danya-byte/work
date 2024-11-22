@@ -1,14 +1,46 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 
+const router = useRouter()
 const count = ref(0)
 const tg = window.Telegram.WebApp
+const isLoading = ref(true)
 
-tg.MainButton.show();
-tg.MainButton.text = "Subscribe"
+onMounted(async () => {
+    await checkUserStatus()
+})
+
+const checkUserStatus = async () => {
+    const username = tg.initDataUnsafe?.user?.username || ''
+    const telegram_id = tg.initDataUnsafe?.user?.id || ''
+
+    try {
+        const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
+
+        if (response.data.exists) {
+            router.push({ name: 'profile', params: { userId: telegram_id } })
+            return
+        }
+
+        initTelegramButton()
+    } catch (error) {
+        console.error('Error checking user:', error)
+        initTelegramButton()
+    } finally {
+        isLoading.value = false
+    }
+}
+
+const initTelegramButton = () => {
+    tg.MainButton.show()
+    tg.MainButton.text = "Subscribe"
+    tg.onEvent('mainButtonClicked', handleMainButtonClick)
+}
 
 const handleMainButtonClick = () => {
-    count.value++;
+    count.value++
     switch (count.value) {
         case 1:
             updateButton("Join", 'https://t.me/Greenwoods_Community')
@@ -17,7 +49,7 @@ const handleMainButtonClick = () => {
             updateButton("Start", 'https://t.me/GreenWoodsGlobal')
             break
         default:
-            redirectToHome()
+            router.push('/')
     }
 }
 
@@ -26,21 +58,15 @@ const updateButton = (text, url) => {
     tg.openTelegramLink(url)
 }
 
-const redirectToHome = () => {
-    window.location.href = '/'
-}
-
-tg.onEvent('mainButtonClicked', handleMainButtonClick);
-
 const headerText = computed(() => {
     if (count.value === 0) return "Subscribe <br> to channel"
     if (count.value === 1) return "Join <br> to community"
-    return "";
+    return ""
 })
 </script>
 
 <template>
-  <div class="join-board open">
+  <div v-if="!isLoading" class="join-board open">
     <div class="centered-content">
       <div class="image-container">
         <img width="80px" height="80px" src="https://em-content.zobj.net/source/telegram/386/admission-tickets_1f39f-fe0f.webp" alt="reg" />
