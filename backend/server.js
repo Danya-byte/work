@@ -99,6 +99,17 @@ app.post('/api/log-action', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.post('/api/log-action', async (req, res) => {
+  const { action, message, timestamp } = req.body
+
+  if (action === 'log') {
+    logger.info(`[Client Log] ${timestamp}: ${message}`)
+    res.json({ success: true })
+  } else {
+    res.status(400).json({ error: 'Invalid action' })
+  }
+});
+
 
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
