@@ -3,6 +3,7 @@ const cors = require('cors');
 const supabase = require('./supabase'); // Импортируем подключение к Supabase
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston'); // Добавляем библиотеку для логирования
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,24 +12,27 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Функция для записи логов в файл
-const logToFile = (message) => {
-  const logFilePath = path.join(__dirname, 'server.log');
-  const timestamp = new Date().toISOString();
-  const logMessage = `[${timestamp}] ${message}\n`;
+// Настройка логирования с использованием Winston
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
 
-  fs.appendFile(logFilePath, logMessage, (err) => {
-    if (err) {
-      console.error('Error writing to log file:', err);
-    }
-  });
-};
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
 
 // Логирование всех запросов
 app.use((req, res, next) => {
   const { method, url, query, body } = req;
   const logMessage = `Incoming request: ${method} ${url} Query: ${JSON.stringify(query)} Body: ${JSON.stringify(body)}`;
-  logToFile(logMessage);
+  logger.info(logMessage);
   next();
 });
 
@@ -42,11 +46,10 @@ app.get('/api/total-members', async (req, res) => {
     if (error) throw error;
     const totalMembers = data.length.toString();
     res.json({ totalMembers });
-    logToFile(`Total members fetched: ${totalMembers}`);
+    logger.info(`Total members fetched: ${totalMembers}`);
   } catch (error) {
-    console.error('Error fetching total members:', error);
+    logger.error(`Error fetching total members: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
-    logToFile(`Error fetching total members: ${error.message}`);
   }
 });
 
@@ -64,15 +67,14 @@ app.get('/api/check-user', async (req, res) => {
 
     if (data.length > 0) {
       res.json({ position: data[0].position, referral_number: data[0].referral_number });
-      logToFile(`User checked: ${username || telegram_id}, position: ${data[0].position}, referral_number: ${data[0].referral_number}`);
+      logger.info(`User checked: ${username || telegram_id}, position: ${data[0].position}, referral_number: ${data[0].referral_number}`);
     } else {
       res.json({ position: null, referral_number: null });
-      logToFile(`User not found: ${username || telegram_id}`);
+      logger.info(`User not found: ${username || telegram_id}`);
     }
   } catch (error) {
-    console.error('Error checking user:', error);
+    logger.error(`Error checking user: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
-    logToFile(`Error checking user: ${error.message}`);
   }
 });
 
@@ -82,10 +84,10 @@ app.post('/api/check-ambassador', (req, res) => {
 
   if (AMBASSADORS.includes(username)) {
     res.json({ isAmbassador: true });
-    logToFile(`Ambassador checked: ${username}, isAmbassador: true`);
+    logger.info(`Ambassador checked: ${username}, isAmbassador: true`);
   } else {
     res.json({ isAmbassador: false });
-    logToFile(`Ambassador checked: ${username}, isAmbassador: false`);
+    logger.info(`Ambassador checked: ${username}, isAmbassador: false`);
   }
 });
 
@@ -103,19 +105,18 @@ app.get('/api/check-participant', async (req, res) => {
 
     if (data.length > 0) {
       res.json({ exists: true, position: data[0].position, referral_number: data[0].referral_number });
-      logToFile(`Participant checked: ${username || telegram_id}, exists: true, position: ${data[0].position}, referral_number: ${data[0].referral_number}`);
+      logger.info(`Participant checked: ${username || telegram_id}, exists: true, position: ${data[0].position}, referral_number: ${data[0].referral_number}`);
     } else {
       res.json({ exists: false });
-      logToFile(`Participant checked: ${username || telegram_id}, exists: false`);
+      logger.info(`Participant checked: ${username || telegram_id}, exists: false`);
     }
   } catch (error) {
-    console.error('Error checking participant:', error);
+    logger.error(`Error checking participant: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
-    logToFile(`Error checking participant: ${error.message}`);
   }
 });
 
 // Запуск сервера
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });
