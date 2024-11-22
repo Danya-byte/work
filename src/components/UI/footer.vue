@@ -50,16 +50,16 @@ const handleJoinClick = async (e) => {
     }
 }
 
-const showJoinButton = computed(() => {
-    return router.currentRoute.value.path !== '/join'
-})
+// const showJoinButton = computed(() => {
+//     return router.currentRoute.value.path !== '/join'
+// })
 </script>
 
 <template>
   <footer>
     <div class="another" v-if="showJoinButton">
-      <RouterLink>
-        <button @click="handleJoinClick">Join earlier</button>
+      <RouterLink to="#" @click="handleJoinClick">
+        <button >Join earlier</button>
       </RouterLink>
     </div>
     <nav class="bar">
