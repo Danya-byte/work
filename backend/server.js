@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 // Список амбассадоров
-const AMBASSADORS = ["backend_creator"];
+const AMBASSADORS = ["#"];
 
 // Роут для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {

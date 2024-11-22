@@ -10,7 +10,7 @@ from supabase_config import supabase  # Импортируем подключе�
 logging.basicConfig(level=logging.INFO)
 
 # Список амбассадоров
-AMBASSADORS = ["backend_creator"]
+AMBASSADORS = ["#"]
 
 # Токен бота
 TOKEN = '8102571059:AAHLHrmuq3Dmu7rtEIKNn0PNPu07UeYnCTU'
