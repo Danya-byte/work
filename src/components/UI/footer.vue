@@ -1,65 +1,52 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
-const tg = window.Telegram?.WebApp
+const tg = window.Telegram.WebApp
+const isLoading = ref(true)
 
-// Обработчик клика по кнопке
-const handleJoinClick = async () => {
-  if (!tg || !tg.initDataUnsafe?.user) {
-    await logToServer('Telegram WebApp user data is unavailable.')
-    router.push({ name: 'join' }) // Перенаправление на join.vue, если данных нет
-    return
-  }
+onMounted(async () => {
+    await checkUserStatus()
+})
 
-  await checkUser()
+const handleJoinClick = async (e) => {
+    e.preventDefault()
+    await checkUserStatus()
 }
 
-// Проверка пользователя через API
-const checkUser = async () => {
-  const user = tg.initDataUnsafe.user
-  const username = user.username || ''
-  const telegram_id = user.id || ''
+const checkUserStatus = async () => {
+    const username = tg.initDataUnsafe?.user?.username || ''
+    const telegram_id = tg.initDataUnsafe?.user?.id || ''
 
-  try {
-    await logToServer(`Checking user: username=${username}, telegram_id=${telegram_id}`)
+    try {
+        const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
 
-    const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
-      params: { username, telegram_id },
-    })
-
-    if (response.data.isRegistered) {
-      await logToServer(`User ${telegram_id} is registered. Redirecting to profile.`)
-      router.push({ name: 'profile', params: { userId: telegram_id } })
-    } else {
-      await logToServer(`User ${telegram_id} is not registered. Redirecting to join.`)
-      router.push({ name: 'join' })
+        if (response.data.exists) {
+            router.push({ name: 'profile', params: { userId: telegram_id } })
+        } else {
+            router.push({ name: 'join' })
+        }
+    } catch (error) {
+        console.error('Error checking user:', error)
+        router.push({ name: 'join' })
+    } finally {
+        isLoading.value = false
     }
-  } catch (error) {
-    await logToServer(`Error checking user: ${error.message}`)
-    router.push({ name: 'join' }) // На случай ошибки API
-  }
 }
 
-// Логирование на сервер
-const logToServer = async (message) => {
-  try {
-    await axios.post('https://work-2-tau.vercel.app/api/log-action', {
-      action: 'log',
-      message,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    // Игнорируем ошибки логирования
-  }
-}
+const showJoinButton = computed(() => {
+    return router.currentRoute.value.name !== 'join'
+})
 </script>
 
 <template>
-  <footer>
-    <div class="another">
-      <button @click="handleJoinClick">Join earlyer</button>
+  <footer v-if="!isLoading">
+    <div class="another" v-if="showJoinButton">
+      <RouterLink to="/join" @click="handleJoinClick">
+        <button>Join earlier</button>
+      </RouterLink>
     </div>
     <nav class="bar">
       <div class="nav-icon" @click="$emit('taskOpen')">
