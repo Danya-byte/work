@@ -5,7 +5,6 @@ import Footers from '@/components/UI/footer.vue'
 import Ref from './ref.vue'
 import Task from './task.vue'
 import User from './user.vue'
-import Join from './join.vue'
 import axios from 'axios'
 
 export default {
@@ -15,8 +14,7 @@ export default {
     Footers,
     Ref,
     Task,
-    User,
-    Join
+    User
   },
   data() {
     return {
@@ -141,7 +139,7 @@ export default {
 
 <template>
   <Background />
-  <Headers v-if="show != 3" :data="show" @profOpen="openProf" />
+  <Headers v-if="show != 3" :data="show" @profOpen="openUserProfile" />
   <main>
     <nav class="cnt">
       <div class="total">
@@ -162,8 +160,7 @@ export default {
   <Footers @refOpen="openRef" @taskOpen="openTask" />
   <Ref v-if="show === 1" />
   <Task v-if="show === 2" />
-  <User v-if="show === 3" :userState="userState" />
-  <Join v-if="show === 4" />
+  <User v-if="show === 3" />
   <div v-if="showModal" class="modal">
     <div class="modal-content">
       <p>Very soon</p>
