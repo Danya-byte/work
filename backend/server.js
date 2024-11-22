@@ -32,7 +32,13 @@ app.use((req, res, next) => {
 });
 
 const AMBASSADORS = [
-  "#"
+  "vitmosk",
+  "DjekillHayd",
+  "eeeergoo",
+  "Kvari6",
+  "plazma787vvv",
+  "borcuxa1996",
+  "Igor6i9"
 ];
 
 // Кэширование для total-members
@@ -40,7 +46,6 @@ let totalMembersCache = null;
 let lastTotalMembersFetchTime = null;
 const CACHE_DURATION = 60000; // 1 минута
 
-// Эндпоинт для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
   const now = Date.now();
   if (totalMembersCache && (now - lastTotalMembersFetchTime < CACHE_DURATION)) {
@@ -65,34 +70,38 @@ app.get('/api/total-members', async (req, res) => {
   }
 });
 
-// Эндпоинт для проверки участника
 app.get('/api/check-participant', async (req, res) => {
   const { username, telegram_id } = req.query;
 
-  logger.info(`Checking participant: username=${username}, telegram_id=${telegram_id}`);
+  console.log('1. Received check request for:', { username, telegram_id });
 
   try {
+    console.log('2. Constructing query for username:', username);
+
     const { data, error } = await supabase
       .from('participants')
       .select('*')
-      .match({ username: username })
+      .eq('username', username)
       .single();
 
-    if (error) {
-      logger.error(`Supabase error: ${error.message}`);
+    console.log('3. Query result:', { data, error });
+
+    if (error && error.code !== 'PGRST116') { // Игнорируем ошибку "не найдено"
+      console.error('4. Supabase error:', error);
       throw error;
     }
 
-    logger.info(`Check participant result: ${!!data}`);
-    res.json({ exists: !!data });
+    const exists = !!data;
+    console.log('5. User exists:', exists);
+
+    res.json({ exists });
 
   } catch (error) {
-    logger.error(`Error checking participant: ${error.message}`);
+    console.error('6. Error processing request:', error);
     res.json({ exists: false });
   }
 });
 
-// Эндпоинт для проверки амбассадора
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;
   const isAmbassador = AMBASSADORS.includes(username);
@@ -100,7 +109,6 @@ app.post('/api/check-ambassador', (req, res) => {
   res.json({ isAmbassador });
 });
 
-// Эндпоинт для логирования действий пользователя
 app.post('/api/log-action', async (req, res) => {
   const { action, userId, timestamp } = req.body;
   logger.info(`Logging user action: ${action} for user ${userId}`);
@@ -120,7 +128,6 @@ app.post('/api/log-action', async (req, res) => {
   }
 });
 
-// Эндпоинт для клиентского логирования
 app.post('/api/client-log', async (req, res) => {
   const { action, message, timestamp } = req.body;
 
@@ -133,8 +140,6 @@ app.post('/api/client-log', async (req, res) => {
   }
 });
 
-// Запуск сервера
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
 });
-

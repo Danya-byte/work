@@ -10,14 +10,19 @@ const handleJoinClick = async (e) => {
     e.preventDefault()
     const user = tg.initDataUnsafe?.user
 
+    console.log('1. User data from Telegram:', user)
+
     if (!user) {
         console.error('No telegram user data')
         return
     }
 
-    console.log('Checking user:', user)
-
     try {
+        console.log('2. Making request to check-participant with:', {
+            username: user.username,
+            telegram_id: user.id
+        })
+
         const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
             params: {
                 username: user.username,
@@ -25,18 +30,22 @@ const handleJoinClick = async (e) => {
             }
         })
 
-        console.log('API Response:', response.data)
+        console.log('3. API Response:', response.data)
 
         if (response.data.exists) {
-            // Если пользователь существует - открываем страницу рефералов
-            await router.push('/user')
+            console.log('4. User exists, redirecting to /user')
+            try {
+                await router.push('/user')
+                console.log('5. Redirect successful')
+            } catch (navError) {
+                console.error('6. Navigation error:', navError)
+            }
         } else {
-            // Если пользователь не существует - отправляем на join
+            console.log('4. User does not exist, redirecting to /join')
             await router.push('/join')
         }
     } catch (error) {
         console.error('Error checking user:', error)
-        // В случае ошибки отправляем на join
         await router.push('/join')
     }
 }
