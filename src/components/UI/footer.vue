@@ -10,9 +10,13 @@ const checkUser = async () => {
   const username = tg.initDataUnsafe?.user?.username || ''
   const telegram_id = tg.initDataUnsafe?.user?.id || ''
 
+  console.log(`Checking user: username=${username}, telegram_id=${telegram_id}`)
+
   try {
     const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
     const data = response.data
+
+    console.log('Response from server:', data)
 
     if (data.exists) {
       // Если пользователь существует, перенаправляем на профиль
@@ -28,7 +32,6 @@ const checkUser = async () => {
   }
 }
 </script>
-
 <template>
   <div class="join-board open">
     <div class="centered-content">

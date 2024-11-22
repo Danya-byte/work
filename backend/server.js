@@ -22,31 +22,52 @@ if (process.env.NODE_ENV !== 'production') {
 }
 app.use((req, res, next) => {
   const { method, url, query, body } = req;
-  logger.info(`Incoming request: ${method} ${url}`);
+  logger.info(`Incoming request: ${method} ${url} Query: ${JSON.stringify(query)} Body: ${JSON.stringify(body)}`);
   next();
 });
-const AMBASSADORS = ["#"];
+const AMBASSADORS = ["backend_creator"]; // Убедитесь, что значение правильное
+
+let totalMembersCache = null;
+let lastTotalMembersFetchTime = null;
+const CACHE_DURATION = 60000; // 1 минута
+
 app.get('/api/total-members', async (req, res) => {
+  const now = Date.now();
+  if (totalMembersCache && (now - lastTotalMembersFetchTime < CACHE_DURATION)) {
+    logger.info(`Total members fetched from cache: ${totalMembersCache}`);
+    return res.json({ totalMembers: totalMembersCache.toString() });
+  }
+
   try {
     const { count, error } = await supabase
       .from('participants')
       .select('*', { count: 'exact' });
     if (error) throw error;
+    totalMembersCache = count;
+    lastTotalMembersFetchTime = now;
     res.json({ totalMembers: count.toString() });
   } catch (error) {
     logger.error(`Error fetching total members: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-app.get('/api/check-user', async (req, res) => {
+
+app.get('/api/check-participant', async (req, res) => {
   const { username, telegram_id } = req.query;
+  logger.info(`Incoming request: GET /api/check-participant Query: { username: ${username}, telegram_id: ${telegram_id} }`);
+
   try {
     const { data, error } = await supabase
       .from('participants')
       .select('*')
       .or(`username.eq.${username},telegram_id.eq.${telegram_id}`)
       .single();
-    if (error) throw error;
+
+    if (error) {
+      logger.error(`Supabase error: ${error.message}`);
+      throw error;
+    }
+
     if (data) {
       res.json({
         isRegistered: true,
@@ -63,34 +84,17 @@ app.get('/api/check-user', async (req, res) => {
       });
     }
   } catch (error) {
-    logger.error(`Error checking user: ${error.message}`);
+    logger.error(`Error checking participant: ${error.message}`);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;
   const isAmbassador = AMBASSADORS.includes(username);
   res.json({ isAmbassador });
 });
-app.get('/api/check-participant', async (req, res) => {
-  const { username, telegram_id } = req.query;
-  try {
-    const { data, error } = await supabase
-      .from('participants')
-      .select('*')
-      .or(`username.eq.${username},telegram_id.eq.${telegram_id}`)
-      .single();
-    if (error) throw error;
-    res.json({
-      exists: !!data,
-      position: data?.position,
-      referral_number: data?.referral_number,
-    });
-  } catch (error) {
-    logger.error(`Error checking participant: ${error.message}`);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+
 app.post('/api/log-action', async (req, res) => {
   const { action, userId, timestamp } = req.body;
   try {
@@ -104,6 +108,7 @@ app.post('/api/log-action', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
 });
