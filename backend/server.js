@@ -31,14 +31,16 @@ app.use((req, res, next) => {
   next();
 });
 
-const AMBASSADORS = ["#"];
+const AMBASSADORS = [
+  "#"
+];
 
 // Кэширование для total-members
 let totalMembersCache = null;
 let lastTotalMembersFetchTime = null;
 const CACHE_DURATION = 60000; // 1 минута
 
-// Endpoint для получения общего количества участников
+// Эндпоинт для получения общего количества участников
 app.get('/api/total-members', async (req, res) => {
   const now = Date.now();
   if (totalMembersCache && (now - lastTotalMembersFetchTime < CACHE_DURATION)) {
@@ -63,7 +65,7 @@ app.get('/api/total-members', async (req, res) => {
   }
 });
 
-// Endpoint для проверки участника
+// Эндпоинт для проверки участника
 app.get('/api/check-participant', async (req, res) => {
   const { username, telegram_id } = req.query;
 
@@ -73,8 +75,8 @@ app.get('/api/check-participant', async (req, res) => {
     const { data, error } = await supabase
       .from('participants')
       .select('*')
-      .or(`username.eq."${username}",telegram_id.eq."${telegram_id}"`)
-      .maybeSingle();
+      .match({ username: username })
+      .single();
 
     if (error) {
       logger.error(`Supabase error: ${error.message}`);
@@ -82,18 +84,15 @@ app.get('/api/check-participant', async (req, res) => {
     }
 
     logger.info(`Check participant result: ${!!data}`);
+    res.json({ exists: !!data });
 
-    res.json({
-      exists: !!data,
-      data: data || null
-    });
   } catch (error) {
     logger.error(`Error checking participant: ${error.message}`);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.json({ exists: false });
   }
 });
 
-// Endpoint для проверки амбассадора
+// Эндпоинт для проверки амбассадора
 app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.body;
   const isAmbassador = AMBASSADORS.includes(username);
@@ -101,7 +100,7 @@ app.post('/api/check-ambassador', (req, res) => {
   res.json({ isAmbassador });
 });
 
-// Endpoint для логирования действий пользователя
+// Эндпоинт для логирования действий пользователя
 app.post('/api/log-action', async (req, res) => {
   const { action, userId, timestamp } = req.body;
   logger.info(`Logging user action: ${action} for user ${userId}`);
@@ -121,7 +120,7 @@ app.post('/api/log-action', async (req, res) => {
   }
 });
 
-// Endpoint для клиентского логирования
+// Эндпоинт для клиентского логирования
 app.post('/api/client-log', async (req, res) => {
   const { action, message, timestamp } = req.body;
 
@@ -134,6 +133,8 @@ app.post('/api/client-log', async (req, res) => {
   }
 });
 
+// Запуск сервера
 app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
 });
+

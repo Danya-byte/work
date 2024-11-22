@@ -1,44 +1,43 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
 const tg = window.Telegram.WebApp
-const isLoading = ref(true)
-
-onMounted(async () => {
-    await checkUserStatus()
-})
 
 const handleJoinClick = async (e) => {
     e.preventDefault()
-    await checkUserStatus()
-}
+    const user = tg.initDataUnsafe?.user
 
-const checkUserStatus = async () => {
-    const username = tg.initDataUnsafe?.user?.username || ''
-    const telegram_id = tg.initDataUnsafe?.user?.id || ''
+    if (!user) {
+        console.error('No telegram user data')
+        return
+    }
 
-    console.log('Checking user:', { username, telegram_id }) // Для отладки
+    console.log('Checking user:', user)
 
     try {
-        const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
+        const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
+            params: {
+                username: user.username,
+                telegram_id: user.id
+            }
+        })
 
-        console.log('API Response:', response.data) // Для отладки
+        console.log('API Response:', response.data)
 
         if (response.data.exists) {
-            // Если пользователь существует, перенаправляем на страницу рефералов (user)
+            // Если пользователь существует - открываем страницу рефералов
             await router.push('/user')
         } else {
-            // Если пользователя нет, перенаправляем на страницу join
+            // Если пользователь не существует - отправляем на join
             await router.push('/join')
         }
     } catch (error) {
         console.error('Error checking user:', error)
+        // В случае ошибки отправляем на join
         await router.push('/join')
-    } finally {
-        isLoading.value = false
     }
 }
 
@@ -48,7 +47,7 @@ const showJoinButton = computed(() => {
 </script>
 
 <template>
-  <footer v-if="!isLoading">
+  <footer>
     <div class="another" v-if="showJoinButton">
       <RouterLink to="#" @click="handleJoinClick">
         <button>Join earlier</button>
