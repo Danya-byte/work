@@ -1,14 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const count = ref(0)
 const tg = window.Telegram.WebApp
 
-tg.MainButton.show();
+tg.MainButton.show()
 tg.MainButton.text = "Subscribe"
 
 const handleMainButtonClick = () => {
-    count.value++;
+    count.value++
     switch (count.value) {
         case 1:
             updateButton("Join", 'https://t.me/Greenwoods_Community')
@@ -17,7 +19,7 @@ const handleMainButtonClick = () => {
             updateButton("Start", 'https://t.me/GreenWoodsGlobal')
             break
         default:
-            redirectToHome()
+            router.push('/')
     }
 }
 
@@ -26,16 +28,12 @@ const updateButton = (text, url) => {
     tg.openTelegramLink(url)
 }
 
-const redirectToHome = () => {
-    window.location.href = '/'
-}
-
-tg.onEvent('mainButtonClicked', handleMainButtonClick);
+tg.onEvent('mainButtonClicked', handleMainButtonClick)
 
 const headerText = computed(() => {
     if (count.value === 0) return "Subscribe <br> to channel"
     if (count.value === 1) return "Join <br> to community"
-    return "";
+    return ""
 })
 </script>
 
