@@ -1,89 +1,44 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-const count = ref(0);
-const tg = window.Telegram.WebApp;
-const userState = ref({
-  isRegistered: false,
-  position: null,
-  refNumber: null,
-  referralsCount: null,
-  isAmbassador: false
-});
-const emit = defineEmits(['updateShow']);
-onMounted(async () => {
-  const user = window.Telegram.WebApp.initDataUnsafe.user;
-  if (user?.username) {
-    try {
-      const response = await axios.get(`https://work-2-tau.vercel.app/api/check-user`, {
-        params: { username: user.username }
-      });
-      userState.value = response.data;
-    } catch (error) {
-      console.error('Error fetching user data:', error);
+import { ref, computed } from 'vue'
+
+const count = ref(0)
+const tg = window.Telegram.WebApp
+
+tg.MainButton.show();
+tg.MainButton.text = "Subscribe"
+
+const handleMainButtonClick = () => {
+    count.value++;
+    switch (count.value) {
+        case 1:
+            updateButton("Join", 'https://t.me/Greenwoods_Community')
+            break
+        case 2:
+            updateButton("Start", 'https://t.me/GreenWoodsGlobal')
+            break
+        default:
+            redirectToHome()
     }
-  }
-  tg.MainButton.show();
-  tg.MainButton.text = "Subscribe";
-});
-const handleMainButtonClick = async () => {
-  count.value++;
-  try {
-    await axios.post('https://work-2-tau.vercel.app/api/log-action', {
-      action: `buttonClick_${count.value}`,
-      userId: window.Telegram.WebApp.initDataUnsafe.user.id,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    console.error('Error logging action:', err);
-  }
-  switch (count.value) {
-    case 1:
-      updateButton("Join", 'https://t.me/Greenwoods_Community');
-      break;
-    case 2:
-      updateButton("Start", 'https://t.me/GreenWoodsGlobal');
-      break;
-    default:
-      redirectToHome();
-  }
-};
+}
+
 const updateButton = (text, url) => {
-  tg.MainButton.text = text;
-  tg.openTelegramLink(url);
-};
+    tg.MainButton.text = text
+    tg.openTelegramLink(url)
+}
+
 const redirectToHome = () => {
-  window.location.href = '/';
-};
-const joinEarly = async () => {
-  const user = window.Telegram.WebApp.initDataUnsafe.user;
-  if (!user?.username && !user?.id) {
-    console.error('No user data available');
-    return;
-  }
-  try {
-    const response = await axios.get('https://work-2-tau.vercel.app/api/check-participant', {
-      params: {
-        username: user.username,
-        telegram_id: user.id
-      }
-    });
-    if (response.data.exists) {
-      emit('updateShow', 3);
-    } else {
-      emit('updateShow', 4);
-    }
-  } catch (err) {
-    console.error('Error checking participant:', err);
-  }
-};
+    window.location.href = '/'
+}
+
 tg.onEvent('mainButtonClicked', handleMainButtonClick);
+
 const headerText = computed(() => {
-  if (count.value === 0) return "Subscribe <br> to channel";
-  if (count.value === 1) return "Join <br> to community";
-  return "";
-});
+    if (count.value === 0) return "Subscribe <br> to channel"
+    if (count.value === 1) return "Join <br> to community"
+    return "";
+})
 </script>
+
 <template>
   <div class="join-board open">
     <div class="centered-content">
@@ -93,15 +48,10 @@ const headerText = computed(() => {
       <div class="leader-title">
         <h1 v-html="headerText" class="header-text"></h1>
       </div>
-      <div v-if="userState.isRegistered">
-        <p>Position: {{ userState.position }}</p>
-        <p>Ref Number: {{ userState.refNumber }}</p>
-        <p>Referrals Count: {{ userState.referralsCount }}</p>
-        <p v-if="userState.isAmbassador">You are an Ambassador</p>
-      </div>
     </div>
   </div>
 </template>
+
 <style scoped>
 .join-board {
   display: none;
@@ -111,28 +61,37 @@ const headerText = computed(() => {
   z-index: 1000;
   background: #212121;
 }
+
 .join-board.open {
   display: flex;
   animation: open 0.5s ease forwards;
   align-items: center;
   justify-content: center;
 }
+
 .centered-content {
   display: grid;
   align-items: center;
   justify-content: center;
 }
+
 .image-container {
   display: grid;
   align-items: center;
   justify-content: center;
 }
+
 .header-text {
   color: #f0f0f0;
   text-align: center;
 }
+
 @keyframes open {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 </style>

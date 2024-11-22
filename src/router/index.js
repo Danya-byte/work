@@ -12,6 +12,11 @@ const router = createRouter({
       path: '/join',
       name: 'join',
       component: () => import('../views/Join.vue'),
+    },
+    {
+      path: '/profile/:userId',
+      name: 'profile',
+      component: () => import('../views/Profile.vue'),
     }
   ],
 })
