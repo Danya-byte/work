@@ -79,8 +79,14 @@ app.get('/api/check-user', async (req, res) => {
 });
 
 // Роут для проверки, является ли пользователь амбассадором
+// Роут для проверки, является ли пользователь амбассадором
 app.post('/api/check-ambassador', (req, res) => {
-  const { username } = req.query;
+  const { username } = req.body; // Извлекаем username из тела запроса
+
+  if (!username) {
+    logger.error('Username is missing in the request body');
+    return res.status(400).json({ error: 'Username is required' });
+  }
 
   if (AMBASSADORS.includes(username)) {
     res.json({ isAmbassador: true });

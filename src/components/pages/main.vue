@@ -73,7 +73,7 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user
       if (user && user.username) {
         try {
-          const response = await axios.post(`https://work-2-tau.vercel.app/api/check-ambassador?username=${user.username}`)
+          const response = await axios.post('https://work-2-tau.vercel.app/api/check-ambassador', { username: user.username })
           this.isAmbassador = response.data.isAmbassador
           if (this.isAmbassador) {
             this.show = 1
