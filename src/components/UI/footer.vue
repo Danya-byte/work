@@ -35,7 +35,7 @@ const handleJoinClick = async (e) => {
         if (response.data.exists) {
             console.log('4. User exists, redirecting to /user')
             try {
-                await router.push('/user')
+                await router.push('/profile/' + user.id)
                 console.log('5. Redirect successful')
             } catch (navError) {
                 console.error('6. Navigation error:', navError)
@@ -58,7 +58,7 @@ const showJoinButton = computed(() => {
 <template>
   <footer>
     <div class="another" v-if="showJoinButton">
-      <RouterLink to="#" @click="handleJoinClick">
+      <RouterLink @click="handleJoinClick">
         <button>Join earlier</button>
       </RouterLink>
     </div>
