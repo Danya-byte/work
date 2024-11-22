@@ -77,7 +77,7 @@ app.get('/api/check-user', async (req, res) => {
 });
 
 // Роут для проверки, является ли пользователь амбассадором
-app.get('/api/check-ambassador', (req, res) => {
+app.post('/api/check-ambassador', (req, res) => {
   const { username } = req.query;
 
   if (AMBASSADORS.includes(username)) {
