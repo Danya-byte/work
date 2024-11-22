@@ -20,31 +20,37 @@ const checkUserStatus = async () => {
     const username = tg.initDataUnsafe?.user?.username || ''
     const telegram_id = tg.initDataUnsafe?.user?.id || ''
 
+    console.log('Checking user:', { username, telegram_id }) // Для отладки
+
     try {
         const response = await axios.get(`https://work-2-tau.vercel.app/api/check-participant?username=${username}&telegram_id=${telegram_id}`)
 
+        console.log('API Response:', response.data) // Для отладки
+
         if (response.data.exists) {
-            router.push({ name: 'profile', params: { userId: telegram_id } })
+            // Если пользователь существует, перенаправляем на страницу рефералов (user)
+            await router.push('/user')
         } else {
-            router.push({ name: 'join' })
+            // Если пользователя нет, перенаправляем на страницу join
+            await router.push('/join')
         }
     } catch (error) {
         console.error('Error checking user:', error)
-        router.push({ name: 'join' })
+        await router.push('/join')
     } finally {
         isLoading.value = false
     }
 }
 
 const showJoinButton = computed(() => {
-    return router.currentRoute.value.name !== 'join'
+    return router.currentRoute.value.path !== '/join'
 })
 </script>
 
 <template>
   <footer v-if="!isLoading">
     <div class="another" v-if="showJoinButton">
-      <RouterLink to="/join" @click="handleJoinClick">
+      <RouterLink to="#" @click="handleJoinClick">
         <button>Join earlier</button>
       </RouterLink>
     </div>
